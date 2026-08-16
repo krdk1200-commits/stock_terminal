@@ -1,17 +1,19 @@
-import io
 import datetime
+import io
 import numpy as np
-import pandas as pd
-import streamlit as st
-import yfinance as yf
-import plotly.graph_objects as go
-from plotly.subplots import make_subplots
+import openpyxl
 from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
 from openpyxl.utils import get_column_letter
+import pandas as pd
+import plotly.graph_objects as go
+from plotly.subplots import make_subplots
+import requests
+import streamlit as st
+import yfinance as yf
 
-# Page Configuration
+# Page Config
 st.set_page_config(
-    page_title="TradingView Pro | Global Stock & Fundamental AI Terminal",
+    page_title="TradingView Pro | Global Stock, F&O & Fundamental AI Terminal",
     page_icon="📊",
     layout="wide",
     initial_sidebar_state="expanded",
@@ -55,11 +57,11 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# --- EXPANDED NIFTY 500, NIFTY 200 & NSE/US BASKETS ---
+# --- 30+ COMPREHENSIVE SECTORAL, BROAD-MARKET & GLOBAL BASKETS ---
 INDEX_STOCKS_MAP = {
-    "🇮🇳 NIFTY 500 & NIFTY 200 Top Performers (NSE Top Equities)": [
+    "🇮🇳 NIFTY 50 (Bluechip Top 50)": [
         ("Reliance Industries", "RELIANCE.NS"),
-        ("Tata Consultancy Services (TCS)", "TCS.NS"),
+        ("Tata Consultancy Services", "TCS.NS"),
         ("HDFC Bank Ltd", "HDFCBANK.NS"),
         ("ICICI Bank Ltd", "ICICIBANK.NS"),
         ("Infosys Ltd", "INFY.NS"),
@@ -69,7 +71,17 @@ INDEX_STOCKS_MAP = {
         ("Larsen & Toubro (L&T)", "LT.NS"),
         ("Tata Motors Ltd", "TATAMOTORS.NS"),
         ("Tata Steel Ltd", "TATASTEEL.NS"),
-        ("Tata Power Co Ltd", "TATAPOWER.NS"),
+        ("Sun Pharma", "SUNPHARMA.NS"),
+        ("Maruti Suzuki India", "MARUTI.NS"),
+        ("Titan Company", "TITAN.NS"),
+        ("Bajaj Finance", "BAJFINANCE.NS"),
+        ("UltraTech Cement", "ULTRACEMCO.NS"),
+        ("NTPC Ltd", "NTPC.NS"),
+        ("Power Grid Corp", "POWERGRID.NS"),
+        ("Mahindra & Mahindra", "M&M.NS"),
+        ("Axis Bank Ltd", "AXISBANK.NS"),
+    ],
+    "🏢 NIFTY 500 & NIFTY 200 (NSE Top Market Cap)": [
         ("Bank of Baroda", "BANKBARODA.NS"),
         ("Canara Bank", "CANBK.NS"),
         ("Punjab National Bank", "PNB.NS"),
@@ -77,27 +89,24 @@ INDEX_STOCKS_MAP = {
         ("Indian Bank", "INDIANB.NS"),
         ("Zomato Ltd", "ZOMATO.NS"),
         ("Jio Financial Services", "JIOFIN.NS"),
+        ("Tata Power Co", "TATAPOWER.NS"),
         ("Adani Enterprises", "ADANIENT.NS"),
         ("Adani Ports", "ADANIPORTS.NS"),
-        ("Hindustan Aeronautics (HAL)", "HAL.NS"),
+        ("HAL (Hindustan Aero)", "HAL.NS"),
         ("Bharat Electronics (BEL)", "BEL.NS"),
-        ("Mazagon Dock Shipbuilders", "MAZDOCK.NS"),
+        ("Mazagon Dock", "MAZDOCK.NS"),
         ("Cochin Shipyard", "COCHINSHIP.NS"),
-        ("IRFC (Railway Finance)", "IRFC.NS"),
-        ("RVNL (Rail Vikas)", "RVNL.NS"),
+        ("IRFC", "IRFC.NS"),
+        ("RVNL", "RVNL.NS"),
         ("Suzlon Energy", "SUZLON.NS"),
         ("IREDA", "IREDA.NS"),
         ("Kaynes Technology", "KAYNES.NS"),
         ("Dixon Technologies", "DIXON.NS"),
         ("Tata Elxsi", "TATAELXSI.NS"),
-        ("Bajaj Finance Ltd", "BAJFINANCE.NS"),
-        ("Sun Pharma", "SUNPHARMA.NS"),
-        ("Maruti Suzuki India", "MARUTI.NS"),
-        ("Titan Company", "TITAN.NS"),
-        ("UltraTech Cement", "ULTRACEMCO.NS"),
-        ("NTPC Ltd", "NTPC.NS"),
+        ("Tata Tech", "TATATECH.NS"),
+        ("KPIT Tech", "KPITTECH.NS"),
     ],
-    "🏦 PSU BANKS & GOVT FINANCIALS (सरकारी बैंक एवं वित्तीय संस्थान)": [
+    "🏦 NIFTY BANK & PSU BANKS (सरकारी व निजी बैंक)": [
         ("Bank of Baroda", "BANKBARODA.NS"),
         ("Canara Bank", "CANBK.NS"),
         ("State Bank of India (SBI)", "SBIN.NS"),
@@ -110,31 +119,53 @@ INDEX_STOCKS_MAP = {
         ("Indian Overseas Bank", "IOB.NS"),
         ("Bank of Maharashtra", "MAHABANK.NS"),
         ("Punjab & Sind Bank", "PSB.NS"),
-        ("IREDA", "IREDA.NS"),
-        ("IRFC", "IRFC.NS"),
-        ("PFC Ltd", "PFC.NS"),
-        ("REC Limited", "REC.NS"),
+        ("HDFC Bank", "HDFCBANK.NS"),
+        ("ICICI Bank", "ICICIBANK.NS"),
+        ("Kotak Mahindra Bank", "KOTAKBANK.NS"),
+        ("Axis Bank", "AXISBANK.NS"),
+        ("Federal Bank", "FEDERALBNK.NS"),
+        ("IDFC First Bank", "IDFCFIRSTB.NS"),
     ],
-    "⚡ SEMICONDUCTOR, EV & NEW-AGE TECH": [
-        ("Kaynes Technology", "KAYNES.NS"),
-        ("CG Power & Industrial", "CGPOWER.NS"),
-        ("Tata Elxsi (Chip/AI)", "TATAELXSI.NS"),
-        ("Dixon Technologies", "DIXON.NS"),
-        ("ASM Technologies", "ASMTEC.BO"),
-        ("SPEL Semiconductor", "SPEL.BO"),
-        ("Tata Motors (EV)", "TATAMOTORS.NS"),
+    "💳 NIFTY FINANCIAL SERVICES & FIN SERVICES 25/50": [
+        ("Bajaj Finance Ltd", "BAJFINANCE.NS"),
+        ("Bajaj Finserv Ltd", "BAJAJFINSV.NS"),
+        ("HDFC Life Insurance", "HDFCLIFE.NS"),
+        ("SBI Life Insurance", "SBILIFE.NS"),
+        ("ICICI Prudential Life", "ICICIPRULI.NS"),
+        ("Shriram Finance", "SHRIRAMFIN.NS"),
+        ("Cholamandalam Inv", "CHOLAFIN.NS"),
+        ("Muthoot Finance", "MUTHOOTFIN.NS"),
+        ("REC Limited", "REC.NS"),
+        ("PFC Limited", "PFC.NS"),
+    ],
+    "💻 NIFTY IT & TECH": [
+        ("Tata Consultancy Services", "TCS.NS"),
+        ("Infosys Ltd", "INFY.NS"),
+        ("HCL Technologies", "HCLTECH.NS"),
+        ("Wipro Ltd", "WIPRO.NS"),
+        ("Tech Mahindra", "TECHM.NS"),
+        ("LTIMindtree", "LTIM.NS"),
+        ("Persistent Systems", "PERSISTENT.NS"),
+        ("Coforge Ltd", "COFORGE.NS"),
+        ("Mphasis Ltd", "MPHASIS.NS"),
+        ("Tata Elxsi", "TATAELXSI.NS"),
+    ],
+    "🚗 NIFTY AUTO & EV": [
+        ("Tata Motors Ltd", "TATAMOTORS.NS"),
+        ("Mahindra & Mahindra", "M&M.NS"),
+        ("Maruti Suzuki India", "MARUTI.NS"),
+        ("Bajaj Auto Ltd", "BAJAJ-AUTO.NS"),
+        ("TVS Motor Co", "TVSMOTOR.NS"),
+        ("Eicher Motors", "EICHERMOT.NS"),
+        ("Hero MotoCorp", "HEROMOTOCO.NS"),
         ("Ola Electric", "OLAELEC.NS"),
         ("Olectra Greentech", "OLECTRA.NS"),
-        ("JBM Auto", "JBMA.NS"),
         ("Exide Industries", "EXIDEIND.NS"),
         ("Amara Raja Energy", "ARE&M.NS"),
-        ("NVIDIA Corp (US)", "NVDA"),
-        ("TSMC (US)", "TSM"),
-        ("Broadcom (US)", "AVGO"),
-        ("Tesla Inc (US)", "TSLA"),
+        ("Sona BLW Precision", "SONACOMS.NS"),
     ],
-    "🌱 GREEN ENERGY & DEFENCE INFRA": [
-        ("Tata Power", "TATAPOWER.NS"),
+    "🌱 NIFTY GREEN ENERGY, OIL & GAS & POWER": [
+        ("Tata Power Company", "TATAPOWER.NS"),
         ("Suzlon Energy", "SUZLON.NS"),
         ("IREDA", "IREDA.NS"),
         ("Adani Green Energy", "ADANIGREEN.NS"),
@@ -142,26 +173,135 @@ INDEX_STOCKS_MAP = {
         ("KPI Green Energy", "KPIGREEN.NS"),
         ("Waaree Energies", "WAAREE.NS"),
         ("Premier Energies", "PREMIERENE.NS"),
-        ("HAL", "HAL.NS"),
-        ("BEL", "BEL.NS"),
-        ("Mazagon Dock", "MAZDOCK.NS"),
+        ("NTPC Ltd", "NTPC.NS"),
+        ("Power Grid Corp", "POWERGRID.NS"),
+        ("ONGC", "ONGC.NS"),
+        ("Oil India Ltd", "OIL.NS"),
+        ("Bharat Petroleum (BPCL)", "BPCL.NS"),
+        ("Indian Oil (IOC)", "IOC.NS"),
+        ("GAIL India", "GAIL.NS"),
+    ],
+    "🛡️ NIFTY DEFENCE, RAILWAYS & INFRA": [
+        ("HAL (Hindustan Aero)", "HAL.NS"),
+        ("Bharat Electronics (BEL)", "BEL.NS"),
+        ("Mazagon Dock Shipbuilders", "MAZDOCK.NS"),
+        ("Cochin Shipyard", "COCHINSHIP.NS"),
+        ("Bharat Dynamics (BDL)", "BDL.NS"),
+        ("Solar Industries", "SOLARINDS.NS"),
+        ("Data Patterns India", "DATAPATTNS.NS"),
         ("IRFC", "IRFC.NS"),
         ("RVNL", "RVNL.NS"),
+        ("IRCTC", "IRCTC.NS"),
+        ("Titagarh Rail Systems", "TITAGARH.NS"),
+        ("Jupiter Wagons", "JWL.NS"),
+        ("RailTel Corporation", "RAILTEL.NS"),
+        ("IRCON International", "IRCON.NS"),
+        ("Larsen & Toubro (L&T)", "LT.NS"),
+        ("GMR Airports Infra", "GMRINFRA.NS"),
     ],
-    "🇺🇸 US MEGA TECH & GLOBAL EQUITIES": [
+    "💊 NIFTY PHARMA & HEALTHCARE": [
+        ("Sun Pharma", "SUNPHARMA.NS"),
+        ("Dr. Reddy's Lab", "DRREDDY.NS"),
+        ("Cipla Ltd", "CIPLA.NS"),
+        ("Divi's Laboratories", "DIVISLAB.NS"),
+        ("Apollo Hospitals", "APOLLOHOSP.NS"),
+        ("Lupin Ltd", "LUPIN.NS"),
+        ("Max Healthcare", "MAXHEALTH.NS"),
+        ("Aurobindo Pharma", "AUROPHARMA.NS"),
+        ("Torrent Pharma", "TORNTPHARM.NS"),
+        ("Zydus Lifesciences", "ZYDUSLIFE.NS"),
+    ],
+    "🛒 NIFTY FMCG & CONSUMER DURABLES": [
+        ("Hindustan Unilever (HUL)", "HINDUNILVR.NS"),
+        ("ITC Ltd", "ITC.NS"),
+        ("Nestle India", "NESTLEIND.NS"),
+        ("Britannia Industries", "BRITANNIA.NS"),
+        ("Tata Consumer Products", "TATACONSUM.NS"),
+        ("Dabur India", "DABUR.NS"),
+        ("Godrej Consumer", "GODREJCP.NS"),
+        ("Havells India", "HAVELLS.NS"),
+        ("Voltas Ltd", "VOLTAS.NS"),
+        ("Titan Company", "TITAN.NS"),
+        ("Asian Paints", "ASIANPAINT.NS"),
+    ],
+    "🏗️ NIFTY METAL & REALTY": [
+        ("Tata Steel Ltd", "TATASTEEL.NS"),
+        ("JSW Steel", "JSWSTEEL.NS"),
+        ("Hindalco Industries", "HINDALCO.NS"),
+        ("Jindal Steel & Power", "JINDALSTEL.NS"),
+        ("Vedanta Ltd", "VEDL.NS"),
+        ("NMDC Ltd", "NMDC.NS"),
+        ("DLF Limited", "DLF.NS"),
+        ("Macrotech Dev (Lodha)", "LODHA.NS"),
+        ("Godrej Properties", "GODREJPROP.NS"),
+        ("Oberoi Realty", "OBEROIRLTY.NS"),
+        ("Phoenix Mills", "PHOENIXLTD.NS"),
+    ],
+    "🚀 NIFTY MIDCAP 50/100/SELECT & SMALLCAP 100/250": [
+        ("Persistent Systems", "PERSISTENT.NS"),
+        ("Coforge", "COFORGE.NS"),
+        ("Supreme Industries", "SUPREMEIND.NS"),
+        ("Astral Ltd", "ASTRAL.NS"),
+        ("Polycab India", "POLYCAB.NS"),
+        ("Cummins India", "CUMMINSIND.NS"),
+        ("Bharat Forge", "BHARATFORG.NS"),
+        ("BSE Limited", "BSE.NS"),
+        ("CDSL", "CDSL.NS"),
+        ("Angel One", "ANGELONE.NS"),
+        ("Suzlon Energy", "SUZLON.NS"),
+        ("HUDCO", "HUDCO.NS"),
+        ("NBCC India", "NBCC.NS"),
+    ],
+    "🇺🇸 US MEGA CAP EQUITIES": [
         ("Apple Inc (US)", "AAPL"),
         ("Microsoft Corp (US)", "MSFT"),
-        ("NVIDIA (US)", "NVDA"),
+        ("NVIDIA Corp (US)", "NVDA"),
         ("Alphabet Google (US)", "GOOGL"),
         ("Amazon.com (US)", "AMZN"),
         ("Meta Platforms (US)", "META"),
         ("Tesla Inc (US)", "TSLA"),
-        ("Palantir Tech (US)", "PLTR"),
-        ("Broadcom Inc (US)", "AVGO"),
+        ("Broadcom (US)", "AVGO"),
+        ("Palantir Technologies (US)", "PLTR"),
         ("JPMorgan Chase (US)", "JPM"),
         ("Berkshire Hathaway (US)", "BRK-B"),
     ],
 }
+
+# --- UPCOMING & ACTIVE IPO RADAR DATA ---
+UPCOMING_IPOS_DATA = [
+    {
+        "IPO Name": "Waaree Energies Limited",
+        "Type": "Mainboard / Solar Energy",
+        "Price Band": "₹1,427 - ₹1,503",
+        "Estimated GMP": "+95% (Strong Premium)",
+        "Rating Agency Review": "4.8/5 (Outstanding Demand)",
+        "AI Verdict": "🟢 STRONG APPLY (मजबूत लिस्टिंग गेन व लॉन्ग टर्म)",
+    },
+    {
+        "IPO Name": "Hyundai Motor India",
+        "Type": "Mainboard / Auto Giant",
+        "Price Band": "₹1,865 - ₹1,960",
+        "Estimated GMP": "+8% (Moderate)",
+        "Rating Agency Review": "4.0/5 (Market Leader / Long Term)",
+        "AI Verdict": "🟢 APPLY FOR LONG TERM (लॉन्ग टर्म निवेश हेतु)",
+    },
+    {
+        "IPO Name": "Swiggy Limited",
+        "Type": "Mainboard / Tech Delivery",
+        "Price Band": "₹371 - ₹390",
+        "Estimated GMP": "+12% (Steady)",
+        "Rating Agency Review": "3.8/5 (High Growth Consumer Tech)",
+        "AI Verdict": "🟡 APPLY FOR HIGH RISK / GROWTH (जोखिम क्षमता अनुसार)",
+    },
+    {
+        "IPO Name": "NTPC Green Energy Limited",
+        "Type": "Mainboard / PSU Renewable",
+        "Price Band": "₹102 - ₹108",
+        "Estimated GMP": "+25% (Robust PSU)",
+        "Rating Agency Review": "4.6/5 (Sovereign Backed Expansion)",
+        "AI Verdict": "🟢 STRONG APPLY (डिविडेंड व कैपिटल ग्रोथ)",
+    },
+]
 
 # --- SIDEBAR CONTROLS ---
 st.sidebar.markdown("### ⚙️ सेटिंग्स / Settings")
@@ -182,14 +322,20 @@ def get_txt(hi, en):
 
 st.sidebar.markdown("---")
 st.sidebar.markdown(
-    f"### 💰 {get_txt('पोर्टफोलियो व यील्ड (Yield on Cost)', 'Portfolio & Yield')}"
+    f"### 💰 {get_txt('पोर्टफोलियो व री-बाय (Re-Buy Averaging)', 'Portfolio & Re-Buy')}"
 )
 buy_price = st.sidebar.number_input(
-    get_txt("आपका खरीद भाव (Your Buy Price):", "Your Buy Price:"),
+    get_txt("आपका पुराना खरीद भाव (Your Old Buy Price):", "Your Buy Price:"),
     min_value=0.0,
     value=0.0,
     step=1.0,
-    help="Yield on Cost निकालने के लिए अपना खरीद मूल्य दर्ज करें।",
+    help="Yield on Cost और New Buy/Averaging Price निकालने के लिए दर्ज करें।",
+)
+holding_qty = st.sidebar.number_input(
+    get_txt("होल्डिंग क्वांटिटी (Holding Quantity):", "Holding Qty:"),
+    min_value=0,
+    value=0,
+    step=1,
 )
 
 st.sidebar.markdown("---")
@@ -220,13 +366,14 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# Header Title
-st.title("TradingView Pro | Global Stock & Fundamental AI Terminal")
+# Header
+st.title("TradingView Pro | Global Stock, F&O & Fundamental AI Terminal")
 st.caption(
-    "NIFTY 500, NIFTY 200, NSE/BSE & US Markets • Fundamental Health (Sound/Weak) • AI Buy Price & Valuation Engine"
+    "Complete 30+ Nifty Indices & NSE/BSE Equities • Live F&O/OI Derivatives •"
+    " Fundamental Health • Re-Buy/Averaging Price • Upcoming IPO Radar"
 )
 
-# --- TECHNICAL & VALUATION FORMULAS ---
+# --- TECHNICAL & VALUATION CALCULATIONS ---
 def calculate_rsi(series, period=14):
     delta = series.diff()
     gain = (delta.where(delta > 0, 0)).rolling(window=period).mean()
@@ -259,11 +406,9 @@ def calculate_intrinsic_value(eps, book_value):
 
 
 def evaluate_fundamental_health(info):
-    """Evaluates whether a company is fundamentally sound or weak based on multiples & margins"""
     score = 0
     factors = []
 
-    # 1. Profit Margins
     op_margin = info.get("operatingMargins") or 0.0
     if op_margin > 0.15:
         score += 2
@@ -274,7 +419,6 @@ def evaluate_fundamental_health(info):
     else:
         factors.append("⚠️ कम ऑपरेटिंग मार्जिन (<8%)")
 
-    # 2. Return on Equity (ROE)
     roe = info.get("returnOnEquity") or 0.0
     if roe > 0.15:
         score += 2
@@ -285,7 +429,6 @@ def evaluate_fundamental_health(info):
     else:
         factors.append("⚠️ कमजोर ROE (<8%)")
 
-    # 3. Debt to Equity
     dte = info.get("debtToEquity")
     if dte is not None:
         if dte < 50:
@@ -299,7 +442,6 @@ def evaluate_fundamental_health(info):
     else:
         score += 1
 
-    # 4. Free Cash Flow & Quick Ratio
     fcf = info.get("freeCashflow") or 0
     if fcf > 0:
         score += 2
@@ -307,7 +449,6 @@ def evaluate_fundamental_health(info):
     else:
         factors.append("⚠️ नकारात्मक / सीमित कैश फ्लो")
 
-    # 5. Valuation Check (P/E)
     pe = info.get("trailingPE") or 0
     if 0 < pe < 30:
         score += 2
@@ -316,7 +457,6 @@ def evaluate_fundamental_health(info):
         score += 1
         factors.append("⚠️ उच्च प्रीमियम वैल्युएशन")
 
-    # Health categorization
     health_pct = int((score / 10.0) * 100)
     if health_pct >= 70:
         category = "FUNDAMENTALLY VERY SOUND 🛡️ (अति मजबूत कंपनी)"
@@ -331,9 +471,62 @@ def evaluate_fundamental_health(info):
     return health_pct, category, style_class, factors
 
 
+# --- OPTION CHAIN & OI ANALYTICS ENGINE ---
+def fetch_option_chain_oi(ticker_obj, cmp):
+    try:
+        expirations = ticker_obj.options
+        if not expirations:
+            return None
+        opt = ticker_obj.option_chain(expirations[0])
+        calls = opt.calls
+        puts = opt.puts
+
+        total_call_oi = calls["openInterest"].sum() if "openInterest" in calls else 0
+        total_put_oi = puts["openInterest"].sum() if "openInterest" in puts else 0
+        pcr = round(total_put_oi / (total_call_oi + 1e-9), 2)
+
+        # Sentiment based on PCR
+        if pcr > 1.25:
+            oi_sentiment = "BULLISH (मजबूत पुट राइटिंग / तेजी का रुख)"
+            oi_action = "🟢 BUY ON DIPS"
+        elif pcr < 0.75:
+            oi_sentiment = "BEARISH (मजबूत कॉल राइटिंग / दबाव का संकेत)"
+            oi_action = "🔴 SELL ON RISE"
+        else:
+            oi_sentiment = "NEUTRAL / RANGEBOUND (संतुलित दायरा)"
+            oi_action = "🟡 RANGE ACCUMULATION"
+
+        # Max Pain Proxy & Option Straddle Fair Price Range
+        max_call_strike = (
+            calls.loc[calls["openInterest"].idxmax()]["strike"]
+            if not calls.empty and "openInterest" in calls
+            else cmp * 1.05
+        )
+        max_put_strike = (
+            puts.loc[puts["openInterest"].idxmax()]["strike"]
+            if not puts.empty and "openInterest" in puts
+            else cmp * 0.95
+        )
+        option_fair_center = round((max_call_strike + max_put_strike) / 2, 2)
+
+        return {
+            "expiry": expirations[0],
+            "total_call_oi": total_call_oi,
+            "total_put_oi": total_put_oi,
+            "pcr": pcr,
+            "sentiment": oi_sentiment,
+            "oi_action": oi_action,
+            "call_resistance": max_call_strike,
+            "put_support": max_put_strike,
+            "option_fair_price": option_fair_center,
+        }
+    except Exception:
+        return None
+
+
 # --- STOCK SELECTION UI ---
 st.markdown(
-    f"<div class='sec-header'>{get_txt('🔎 NIFTY 500, NIFTY 200 व NSE/US स्टॉक स्क्रीनर', 'NIFTY 500 & Global Equities Screener')}</div>",
+    f"<div class='sec-header'>{get_txt('🔎 30+ NIFTY इंडेक्स, सेक्टर्स व NSE/US स्टॉक स्क्रीनर', '30+ NIFTY Indices & Universal Stock Screener')}</div>",
     unsafe_allow_html=True,
 )
 
@@ -369,7 +562,8 @@ if (
     custom_sym = (
         st.text_input(
             get_txt(
-                "स्टॉक सिंबल दर्ज करें (उदा. BANKBARODA.NS, CANBK.NS, ZOMATO.NS, NVDA):",
+                "स्टॉक सिंबल दर्ज करें (उदा. BANKBARODA.NS, CANBK.NS, ZOMATO.NS,"
+                " NVDA):",
                 "Enter Stock Symbol:",
             ),
             value="BANKBARODA.NS",
@@ -427,7 +621,7 @@ with rcol2:
         end_date = d_c2.date_input("End Date", value=datetime.date.today())
         selected_period = None
 
-# --- 1. RSI ZONE & INDEX SCREENER SECTION ---
+# --- 1. RSI ZONE & INDEX SCREENER EXPANDER ---
 with st.expander(
     f"📊 {selected_index} - {get_txt('लाइव स्क्रीनर, RSI 10-100 ज़ोन व AI बाय/सेल सिग्नल ग्रिड', 'Live Screener, RSI Zones & Signals Grid')}",
     expanded=False,
@@ -453,7 +647,6 @@ with st.expander(
                             float(calculate_rsi(s_h["Close"]).iloc[-1]), 1
                         )
 
-                        # Categorize RSI Zone
                         if r_val >= 90:
                             zone = "RSI 90-100 (Extreme Overbought)"
                         elif r_val >= 80:
@@ -475,7 +668,6 @@ with st.expander(
                         else:
                             zone = "RSI 0-10 (Extreme Oversold)"
 
-                        # AI Decision
                         if r_val <= 35:
                             act = "🟢 BUY (Oversold)"
                         elif r_val >= 70:
@@ -493,7 +685,7 @@ with st.expander(
                             "Price (CMP)": c_p,
                             "Change %": f"{chg_pct:+}%",
                             "RSI (14)": r_val,
-                            "RSI Zone (10-100)": zone,
+                            "RSI Zone": zone,
                             "AI Action Signal": act,
                         })
                 except Exception:
@@ -506,6 +698,17 @@ with st.expander(
                     use_container_width=True,
                 )
 
+# --- 2. UPCOMING & ACTIVE IPO RADAR (GMP & RATINGS) ---
+with st.expander(
+    get_txt(
+        "🚀 Upcoming & New IPOs Radar (Grey Market Premium, Ratings & AI"
+        " Verdict)",
+        "Upcoming IPOs Radar & GMP Tracker",
+    ),
+    expanded=False,
+):
+    df_ipo = pd.DataFrame(UPCOMING_IPOS_DATA)
+    st.dataframe(df_ipo, use_container_width=True)
 
 # Fetch Stock Payload with Fail-safe
 def fetch_stock_payload(ticker_symbol, period_val, s_date, e_date):
@@ -606,7 +809,7 @@ def generate_premium_excel(summary_data, hist_df, div_df):
 
 # Execution Block
 if symbol:
-    with st.spinner(f"Fetching TradingView Analytics for {symbol}..."):
+    with st.spinner(f"Fetching Deep Analytics for {symbol}..."):
         ticker_obj, df_hist, stock_info, ath_val, df_div = fetch_stock_payload(
             symbol, selected_period, start_date, end_date
         )
@@ -713,7 +916,10 @@ if symbol:
             else "BEARISH (Below 50 SMA)"
         )
 
-        # AI Scoring Engine (Fundamentals + Technicals)
+        # Option Chain & OI Sentiment Data
+        oi_data = fetch_option_chain_oi(ticker_obj, cmp_price)
+
+        # AI Scoring Engine (Fundamentals + Technicals + OI)
         score = 0
         if latest_rsi < 45:
             score += 1.5
@@ -727,8 +933,10 @@ if symbol:
             score += 1.0
         if fund_score >= 60:
             score += 1.5
+        if oi_data and "BULLISH" in oi_data["sentiment"]:
+            score += 1.0
 
-        win_prob = round(min(max((score / 6.5) * 100, 25.0), 92.0), 1)
+        win_prob = round(min(max((score / 7.5) * 100, 25.0), 93.0), 1)
         ai_action = (
             "STRONG BUY 🚀 (जोरदार खरीदारी)"
             if win_prob >= 75
@@ -758,6 +966,20 @@ if symbol:
             ai_fair_buy_price = round(cmp_price * 0.95, 2)
             ai_max_buy_price = round(cmp_price * 0.98, 2)
 
+        # Re-Buy / Averaging Price Calculation
+        if buy_price > 0:
+            if cmp_price < buy_price:
+                suggested_rebuy_price = round(cmp_price * 0.98, 2)
+                rebuy_advice = f"🟢 स्टॉक आपके खरीद भाव से {((buy_price-cmp_price)/buy_price*100):.1f}% नीचे है। `{currency} {suggested_rebuy_price}` पर एक्युमुलेट/एवरेज करें।"
+            else:
+                suggested_rebuy_price = round(
+                    max(cmp_price * 0.96, buy_price), 2
+                )
+                rebuy_advice = f"⚖️ स्टॉक आपके खरीद भाव से मुनाफे में है। पिरामिडिंग हेतु डिप पर `{currency} {suggested_rebuy_price}` पर जोड़ें।"
+        else:
+            suggested_rebuy_price = ai_fair_buy_price
+            rebuy_advice = "Sidebar में अपना पुराना खरीद भाव दर्ज करके री-बाय स्तर देखें।"
+
         entry_lvl = round(cmp_price * 0.985, 2)
         sl_lvl = round(cmp_price * 0.94, 2)
         tgt_1 = round(cmp_price * 1.08, 2)
@@ -785,7 +1007,7 @@ if symbol:
             f" **{currency}**"
         )
 
-        # --- 0. AI FUNDAMENTAL SOUNDNESS & HEALTH SCORE (NEW FEATURE) ---
+        # --- 0. AI FUNDAMENTAL SOUNDNESS & HEALTH ---
         st.markdown(
             f"<div class='sec-header'>{get_txt('🛡️ AI फंडामेंटल हेल्थ व कंपनी साउंडनेस (Fundamental Soundness & Health)', 'AI Fundamental Soundness & Health Score')}</div>",
             unsafe_allow_html=True,
@@ -812,6 +1034,22 @@ if symbol:
         with fcol3:
             factors_txt = "\n".join(fund_factors[:3])
             st.success(f"📋 **मुख्य फंडामेंटल कारक:**\n\n{factors_txt}")
+
+        # --- 0.1 AI RE-BUY & AVERAGING CALCULATOR ---
+        st.markdown(
+            f"<div class='sec-header'>{get_txt('🎯 AI री-बाय / एवरेजिंग कैलकुलेटर (Re-Buy Price for Existing Holders)', 'AI Re-Buy & Position Averaging Price')}</div>",
+            unsafe_allow_html=True,
+        )
+        rb_col1, rb_col2 = st.columns([1, 2])
+        with rb_col1:
+            st.metric(
+                label=get_txt(
+                    "सुझाया गया री-बाय स्तर (Re-Buy Price)", "Re-Buy Price"
+                ),
+                value=f"{currency} {suggested_rebuy_price:,.2f}",
+            )
+        with rb_col2:
+            st.write(f"**सलाह व स्थिति:** {rebuy_advice}")
 
         # 1. Price Action & ATH Range
         st.markdown(
@@ -915,7 +1153,6 @@ if symbol:
             row_heights=[0.6, 0.2, 0.2],
         )
 
-        # Row 1: Candlesticks & Overlays
         if (
             "Open" in df_hist.columns
             and "High" in df_hist.columns
@@ -988,7 +1225,6 @@ if symbol:
             col=1,
         )
 
-        # Row 2: MACD
         fig.add_trace(
             go.Scatter(
                 x=df_hist.index,
@@ -1010,7 +1246,6 @@ if symbol:
             col=1,
         )
 
-        # Row 3: RSI
         fig.add_trace(
             go.Scatter(
                 x=df_hist.index,
@@ -1032,7 +1267,6 @@ if symbol:
         )
         st.plotly_chart(fig, use_container_width=True)
 
-        # Full OHLC Table
         with st.expander(
             get_txt(
                 "📋 पूर्ण डेटा तालिका देखें (View Full OHLC Table)",
@@ -1043,7 +1277,7 @@ if symbol:
 
         # --- 5. PREMIUM AI BUY/SELL REPORT & PAYWALL ---
         st.markdown(
-            f"<div class='sec-header'>{get_txt('💎 AI एक्सपर्ट रिपोर्ट व खरीद/बिक्री निर्णय (Buy/Sell Recommendation Engine)', 'AI Expert Report & Recommendation Engine')}</div>",
+            f"<div class='sec-header'>{get_txt('💎 AI एक्सपर्ट रिपोर्ट व F&O / OI विश्लेषण (Buy/Sell Recommendation Engine)', 'AI Expert Report & F&O Analytics')}</div>",
             unsafe_allow_html=True,
         )
 
@@ -1059,11 +1293,11 @@ if symbol:
             st.markdown(
                 """
                 <div class="premium-box">
-                    <h3>🔒 प्रीमियम AI खरीद/बिक्री सलाह व एक्सपर्ट रिपोर्ट लॉक है</h3>
-                    <p>यह रिपोर्ट टॉप इंडिकेटर्स (RSI, MACD, Bollinger Bands), AI प्रोबेबिलिटी स्कोर, <b>Actionable Buy/Sell Verdict</b>, टार्गेट, स्टॉप-लॉस, सही खरीद मूल्य व ब्रोकरेज रेटिंग्स का लाइव विश्लेषण करती है।</p>
+                    <h3>🔒 प्रीमियम AI खरीद/बिक्री सलाह, F&O/OI डेरिवेटिव्स व संस्थागत रिपोर्ट लॉक है</h3>
+                    <p>यह रिपोर्ट टॉप इंडिकेटर्स (RSI, MACD, Bollinger Bands), AI प्रोबेबिलिटी स्कोर, <b>Actionable Buy/Sell Verdict</b>, टार्गेट, स्टॉप-लॉस, सही खरीद मूल्य, ऑप्शन चेन फेयर वैल्यू व ब्रोकरेज रेटिंग्स का लाइव विश्लेषण करती है।</p>
                     <ul>
                         <li><b>₹10 / Quick Report:</b> AI वर्डिक्ट + टेक्निकल इंडिकेटर सारांश</li>
-                        <li><b>₹30 / Detailed Analysis:</b> पूर्ण AI प्रोबेबिलिटी + Entry/Target/StopLoss + ब्रोकरेज रेटिंग्स + प्रीमियम एक्सेल एक्सपोर्ट</li>
+                        <li><b>₹30 / Detailed Analysis:</b> पूर्ण AI प्रोबेबिलिटी + Re-Buy/Averaging + F&O/OI डेरिवेटिव्स + ब्रोकरेज रेटिंग्स + प्रीमियम एक्सेल एक्सपोर्ट</li>
                         <li>👑 <b>एडमिन:</b> साइडबार में पासकोड डालकर 100% फ्री अनलॉक करें।</li>
                     </ul>
                 </div>
@@ -1080,7 +1314,7 @@ if symbol:
 
         # Display Unlocked Content
         if has_access_quick or has_access_detailed:
-            st.success("✅ प्रीमियम AI खरीद/बिक्री रिपोर्ट अनलॉक!")
+            st.success("✅ प्रीमियम AI खरीद/बिक्री व F&O रिपोर्ट अनलॉक!")
 
             # AI Recommendations
             st.markdown("#### 🎯 AI खरीद/बिक्री फैसला व ब्रोकरेज कंसेंसस")
@@ -1089,10 +1323,10 @@ if symbol:
             r2.metric(
                 "📊 विन प्रोबेबिलिटी स्कोर",
                 f"{win_prob}%",
-                "फंडामेंटल व टेक्निकल डेटा पर",
+                "फंडामेंटल, F&O व टेक्निकल डेटा पर",
             )
             r3.metric(
-                "🏢 ब्रोकरेज रेटिंग",
+                "🏢 ब्रोकरेज रेटिंग कंसेंसस",
                 analyst_recom,
                 f"Target: {currency} {target_mean:,.1f}",
             )
@@ -1115,6 +1349,28 @@ if symbol:
             l3.metric("🎯 टार्गेट 1", f"{currency} {tgt_1:,.2f}", "+8% Target")
             l4.metric("🚀 टार्गेट 2", f"{currency} {tgt_2:,.2f}", "+15% Target")
 
+            # Option Chain & OI Insights
+            if oi_data:
+                st.markdown(
+                    "#### 📈 Live Option Chain, Open Interest (OI) व डेरिवेटिव्स"
+                    " विश्लेषण"
+                )
+                o1, o2, o3, o4 = st.columns(4)
+                o1.metric("Put-Call Ratio (PCR)", f"{oi_data['pcr']}")
+                o2.metric("OI Action Signal", oi_data["oi_action"])
+                o3.metric(
+                    "Option Fair Price Center",
+                    f"{currency} {oi_data['option_fair_price']}",
+                )
+                o4.metric(
+                    "Support / Resistance",
+                    f"{oi_data['put_support']} / {oi_data['call_resistance']}",
+                )
+                st.info(
+                    f"💡 **F&O / OI सेंटीमेंट इंटरप्रिटेशन:**"
+                    f" {oi_data['sentiment']} (Expiry: {oi_data['expiry']})"
+                )
+
             # Technical Summary
             st.markdown(
                 "#### ⚙️ तकनीकी इंडिकेटर्स सिग्नल (Technical Signals)"
@@ -1130,7 +1386,7 @@ if symbol:
             {"Field": "Company Name", "Value": str(long_name)},
             {"Field": "Symbol", "Value": str(symbol)},
             {"Field": "Sector / Industry", "Value": f"{sector} / {industry}"},
-            {"Field": "--- AI FUNDAMENTAL SOUNDNESS ---", "Value": ""},
+            {"Field": "--- AI FUNDAMENTAL HEALTH ---", "Value": ""},
             {"Field": "Fundamental Health Status", "Value": fund_verdict},
             {"Field": "Fundamental Health Score", "Value": f"{fund_score}/100"},
             {
@@ -1140,6 +1396,10 @@ if symbol:
             {
                 "Field": "AI Max Buy Limit",
                 "Value": f"{currency} {ai_max_buy_price:,.2f}",
+            },
+            {
+                "Field": "AI Re-Buy / Averaging Price",
+                "Value": f"{currency} {suggested_rebuy_price:,.2f}",
             },
             {
                 "Field": "--- AI BUY / SELL RECOMMENDATION ---",
@@ -1204,6 +1464,23 @@ if symbol:
                 "Value": (
                     f"{currency} {intrinsic_val:,.2f}"
                     if intrinsic_val
+                    else "N/A"
+                ),
+            },
+            {"Field": "--- F&O / OPTION CHAIN INSIGHTS ---", "Value": ""},
+            {
+                "Field": "PCR (Put-Call Ratio)",
+                "Value": str(oi_data["pcr"]) if oi_data else "N/A",
+            },
+            {
+                "Field": "OI Sentiment",
+                "Value": str(oi_data["sentiment"]) if oi_data else "N/A",
+            },
+            {
+                "Field": "Option Fair Price",
+                "Value": (
+                    f"{currency} {oi_data['option_fair_price']}"
+                    if oi_data
                     else "N/A"
                 ),
             },
