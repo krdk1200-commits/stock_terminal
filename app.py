@@ -8,7 +8,13 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
 from openpyxl.utils import get_column_letter
-
+import streamlit
+import yfinance
+import pandas
+import openpyxl
+import requests
+import numpy
+import plotly
 # Page Config
 st.set_page_config(
     page_title="TradingView Pro | Global Stock & Fundamental Terminal",
