@@ -11,7 +11,7 @@ import requests
 import streamlit as st
 import yfinance as yf
 
-# Page Config
+# Page Configuration
 st.set_page_config(
     page_title="TradingView Pro | Global Stock, F&O & Fundamental AI Terminal",
     page_icon="📊",
@@ -19,7 +19,7 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# Custom Styles
+# Custom Styling
 st.markdown(
     """
     <style>
@@ -57,253 +57,196 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# --- 30+ COMPREHENSIVE SECTORAL, BROAD-MARKET & GLOBAL BASKETS ---
-INDEX_STOCKS_MAP = {
-    "🇮🇳 NIFTY 50 (Bluechip Top 50)": [
-        ("Reliance Industries", "RELIANCE.NS"),
-        ("Tata Consultancy Services", "TCS.NS"),
-        ("HDFC Bank Ltd", "HDFCBANK.NS"),
-        ("ICICI Bank Ltd", "ICICIBANK.NS"),
-        ("Infosys Ltd", "INFY.NS"),
-        ("State Bank of India (SBI)", "SBIN.NS"),
-        ("Bharti Airtel", "BHARTIARTL.NS"),
-        ("ITC Ltd", "ITC.NS"),
-        ("Larsen & Toubro (L&T)", "LT.NS"),
-        ("Tata Motors Ltd", "TATAMOTORS.NS"),
-        ("Tata Steel Ltd", "TATASTEEL.NS"),
-        ("Sun Pharma", "SUNPHARMA.NS"),
-        ("Maruti Suzuki India", "MARUTI.NS"),
-        ("Titan Company", "TITAN.NS"),
-        ("Bajaj Finance", "BAJFINANCE.NS"),
-        ("UltraTech Cement", "ULTRACEMCO.NS"),
-        ("NTPC Ltd", "NTPC.NS"),
-        ("Power Grid Corp", "POWERGRID.NS"),
-        ("Mahindra & Mahindra", "M&M.NS"),
-        ("Axis Bank Ltd", "AXISBANK.NS"),
-    ],
-    "🏢 NIFTY 500 & NIFTY 200 (NSE Top Market Cap)": [
-        ("Bank of Baroda", "BANKBARODA.NS"),
-        ("Canara Bank", "CANBK.NS"),
-        ("Punjab National Bank", "PNB.NS"),
-        ("Union Bank of India", "UNIONBANK.NS"),
-        ("Indian Bank", "INDIANB.NS"),
-        ("Zomato Ltd", "ZOMATO.NS"),
-        ("Jio Financial Services", "JIOFIN.NS"),
-        ("Tata Power Co", "TATAPOWER.NS"),
-        ("Adani Enterprises", "ADANIENT.NS"),
-        ("Adani Ports", "ADANIPORTS.NS"),
-        ("HAL (Hindustan Aero)", "HAL.NS"),
-        ("Bharat Electronics (BEL)", "BEL.NS"),
-        ("Mazagon Dock", "MAZDOCK.NS"),
-        ("Cochin Shipyard", "COCHINSHIP.NS"),
-        ("IRFC", "IRFC.NS"),
-        ("RVNL", "RVNL.NS"),
-        ("Suzlon Energy", "SUZLON.NS"),
-        ("IREDA", "IREDA.NS"),
-        ("Kaynes Technology", "KAYNES.NS"),
-        ("Dixon Technologies", "DIXON.NS"),
-        ("Tata Elxsi", "TATAELXSI.NS"),
-        ("Tata Tech", "TATATECH.NS"),
-        ("KPIT Tech", "KPITTECH.NS"),
-    ],
-    "🏦 NIFTY BANK & PSU BANKS (सरकारी व निजी बैंक)": [
-        ("Bank of Baroda", "BANKBARODA.NS"),
-        ("Canara Bank", "CANBK.NS"),
-        ("State Bank of India (SBI)", "SBIN.NS"),
-        ("Punjab National Bank (PNB)", "PNB.NS"),
-        ("Union Bank of India", "UNIONBANK.NS"),
-        ("Indian Bank", "INDIANB.NS"),
-        ("Bank of India", "BANKINDIA.NS"),
-        ("Central Bank of India", "CENTRALBK.NS"),
-        ("UCO Bank", "UCOBANK.NS"),
-        ("Indian Overseas Bank", "IOB.NS"),
-        ("Bank of Maharashtra", "MAHABANK.NS"),
-        ("Punjab & Sind Bank", "PSB.NS"),
-        ("HDFC Bank", "HDFCBANK.NS"),
-        ("ICICI Bank", "ICICIBANK.NS"),
-        ("Kotak Mahindra Bank", "KOTAKBANK.NS"),
-        ("Axis Bank", "AXISBANK.NS"),
-        ("Federal Bank", "FEDERALBNK.NS"),
-        ("IDFC First Bank", "IDFCFIRSTB.NS"),
-    ],
-    "💳 NIFTY FINANCIAL SERVICES & FIN SERVICES 25/50": [
-        ("Bajaj Finance Ltd", "BAJFINANCE.NS"),
-        ("Bajaj Finserv Ltd", "BAJAJFINSV.NS"),
-        ("HDFC Life Insurance", "HDFCLIFE.NS"),
-        ("SBI Life Insurance", "SBILIFE.NS"),
-        ("ICICI Prudential Life", "ICICIPRULI.NS"),
-        ("Shriram Finance", "SHRIRAMFIN.NS"),
-        ("Cholamandalam Inv", "CHOLAFIN.NS"),
-        ("Muthoot Finance", "MUTHOOTFIN.NS"),
-        ("REC Limited", "REC.NS"),
-        ("PFC Limited", "PFC.NS"),
-    ],
-    "💻 NIFTY IT & TECH": [
-        ("Tata Consultancy Services", "TCS.NS"),
-        ("Infosys Ltd", "INFY.NS"),
-        ("HCL Technologies", "HCLTECH.NS"),
-        ("Wipro Ltd", "WIPRO.NS"),
-        ("Tech Mahindra", "TECHM.NS"),
-        ("LTIMindtree", "LTIM.NS"),
-        ("Persistent Systems", "PERSISTENT.NS"),
-        ("Coforge Ltd", "COFORGE.NS"),
-        ("Mphasis Ltd", "MPHASIS.NS"),
-        ("Tata Elxsi", "TATAELXSI.NS"),
-    ],
-    "🚗 NIFTY AUTO & EV": [
-        ("Tata Motors Ltd", "TATAMOTORS.NS"),
-        ("Mahindra & Mahindra", "M&M.NS"),
-        ("Maruti Suzuki India", "MARUTI.NS"),
-        ("Bajaj Auto Ltd", "BAJAJ-AUTO.NS"),
-        ("TVS Motor Co", "TVSMOTOR.NS"),
-        ("Eicher Motors", "EICHERMOT.NS"),
-        ("Hero MotoCorp", "HEROMOTOCO.NS"),
-        ("Ola Electric", "OLAELEC.NS"),
-        ("Olectra Greentech", "OLECTRA.NS"),
-        ("Exide Industries", "EXIDEIND.NS"),
-        ("Amara Raja Energy", "ARE&M.NS"),
-        ("Sona BLW Precision", "SONACOMS.NS"),
-    ],
-    "🌱 NIFTY GREEN ENERGY, OIL & GAS & POWER": [
-        ("Tata Power Company", "TATAPOWER.NS"),
-        ("Suzlon Energy", "SUZLON.NS"),
-        ("IREDA", "IREDA.NS"),
-        ("Adani Green Energy", "ADANIGREEN.NS"),
-        ("Inox Wind", "INOXWIND.NS"),
-        ("KPI Green Energy", "KPIGREEN.NS"),
-        ("Waaree Energies", "WAAREE.NS"),
-        ("Premier Energies", "PREMIERENE.NS"),
-        ("NTPC Ltd", "NTPC.NS"),
-        ("Power Grid Corp", "POWERGRID.NS"),
-        ("ONGC", "ONGC.NS"),
-        ("Oil India Ltd", "OIL.NS"),
-        ("Bharat Petroleum (BPCL)", "BPCL.NS"),
-        ("Indian Oil (IOC)", "IOC.NS"),
-        ("GAIL India", "GAIL.NS"),
-    ],
-    "🛡️ NIFTY DEFENCE, RAILWAYS & INFRA": [
-        ("HAL (Hindustan Aero)", "HAL.NS"),
-        ("Bharat Electronics (BEL)", "BEL.NS"),
-        ("Mazagon Dock Shipbuilders", "MAZDOCK.NS"),
-        ("Cochin Shipyard", "COCHINSHIP.NS"),
-        ("Bharat Dynamics (BDL)", "BDL.NS"),
-        ("Solar Industries", "SOLARINDS.NS"),
-        ("Data Patterns India", "DATAPATTNS.NS"),
-        ("IRFC", "IRFC.NS"),
-        ("RVNL", "RVNL.NS"),
-        ("IRCTC", "IRCTC.NS"),
-        ("Titagarh Rail Systems", "TITAGARH.NS"),
-        ("Jupiter Wagons", "JWL.NS"),
-        ("RailTel Corporation", "RAILTEL.NS"),
-        ("IRCON International", "IRCON.NS"),
-        ("Larsen & Toubro (L&T)", "LT.NS"),
-        ("GMR Airports Infra", "GMRINFRA.NS"),
-    ],
-    "💊 NIFTY PHARMA & HEALTHCARE": [
-        ("Sun Pharma", "SUNPHARMA.NS"),
-        ("Dr. Reddy's Lab", "DRREDDY.NS"),
-        ("Cipla Ltd", "CIPLA.NS"),
-        ("Divi's Laboratories", "DIVISLAB.NS"),
-        ("Apollo Hospitals", "APOLLOHOSP.NS"),
-        ("Lupin Ltd", "LUPIN.NS"),
-        ("Max Healthcare", "MAXHEALTH.NS"),
-        ("Aurobindo Pharma", "AUROPHARMA.NS"),
-        ("Torrent Pharma", "TORNTPHARM.NS"),
-        ("Zydus Lifesciences", "ZYDUSLIFE.NS"),
-    ],
-    "🛒 NIFTY FMCG & CONSUMER DURABLES": [
-        ("Hindustan Unilever (HUL)", "HINDUNILVR.NS"),
-        ("ITC Ltd", "ITC.NS"),
-        ("Nestle India", "NESTLEIND.NS"),
-        ("Britannia Industries", "BRITANNIA.NS"),
-        ("Tata Consumer Products", "TATACONSUM.NS"),
-        ("Dabur India", "DABUR.NS"),
-        ("Godrej Consumer", "GODREJCP.NS"),
-        ("Havells India", "HAVELLS.NS"),
-        ("Voltas Ltd", "VOLTAS.NS"),
-        ("Titan Company", "TITAN.NS"),
-        ("Asian Paints", "ASIANPAINT.NS"),
-    ],
-    "🏗️ NIFTY METAL & REALTY": [
-        ("Tata Steel Ltd", "TATASTEEL.NS"),
-        ("JSW Steel", "JSWSTEEL.NS"),
-        ("Hindalco Industries", "HINDALCO.NS"),
-        ("Jindal Steel & Power", "JINDALSTEL.NS"),
-        ("Vedanta Ltd", "VEDL.NS"),
-        ("NMDC Ltd", "NMDC.NS"),
-        ("DLF Limited", "DLF.NS"),
-        ("Macrotech Dev (Lodha)", "LODHA.NS"),
-        ("Godrej Properties", "GODREJPROP.NS"),
-        ("Oberoi Realty", "OBEROIRLTY.NS"),
-        ("Phoenix Mills", "PHOENIXLTD.NS"),
-    ],
-    "🚀 NIFTY MIDCAP 50/100/SELECT & SMALLCAP 100/250": [
-        ("Persistent Systems", "PERSISTENT.NS"),
-        ("Coforge", "COFORGE.NS"),
-        ("Supreme Industries", "SUPREMEIND.NS"),
-        ("Astral Ltd", "ASTRAL.NS"),
-        ("Polycab India", "POLYCAB.NS"),
-        ("Cummins India", "CUMMINSIND.NS"),
-        ("Bharat Forge", "BHARATFORG.NS"),
-        ("BSE Limited", "BSE.NS"),
-        ("CDSL", "CDSL.NS"),
-        ("Angel One", "ANGELONE.NS"),
-        ("Suzlon Energy", "SUZLON.NS"),
-        ("HUDCO", "HUDCO.NS"),
-        ("NBCC India", "NBCC.NS"),
-    ],
-    "🇺🇸 US MEGA CAP EQUITIES": [
-        ("Apple Inc (US)", "AAPL"),
-        ("Microsoft Corp (US)", "MSFT"),
-        ("NVIDIA Corp (US)", "NVDA"),
-        ("Alphabet Google (US)", "GOOGL"),
-        ("Amazon.com (US)", "AMZN"),
-        ("Meta Platforms (US)", "META"),
-        ("Tesla Inc (US)", "TSLA"),
-        ("Broadcom (US)", "AVGO"),
-        ("Palantir Technologies (US)", "PLTR"),
-        ("JPMorgan Chase (US)", "JPM"),
-        ("Berkshire Hathaway (US)", "BRK-B"),
-    ],
-}
+# --- MASTER ALL-MARKET STOCKS DATABASE (NSE / BSE / US) ---
+ALL_GLOBAL_STOCKS = [
+    ("Bank of India", "BANKINDIA.NS"),
+    ("Bank of Baroda", "BANKBARODA.NS"),
+    ("Canara Bank", "CANBK.NS"),
+    ("State Bank of India (SBI)", "SBIN.NS"),
+    ("Punjab National Bank (PNB)", "PNB.NS"),
+    ("Union Bank of India", "UNIONBANK.NS"),
+    ("Indian Bank", "INDIANB.NS"),
+    ("Central Bank of India", "CENTRALBK.NS"),
+    ("UCO Bank", "UCOBANK.NS"),
+    ("Indian Overseas Bank (IOB)", "IOB.NS"),
+    ("Bank of Maharashtra", "MAHABANK.NS"),
+    ("Punjab & Sind Bank", "PSB.NS"),
+    ("HDFC Bank Ltd", "HDFCBANK.NS"),
+    ("ICICI Bank Ltd", "ICICIBANK.NS"),
+    ("Kotak Mahindra Bank", "KOTAKBANK.NS"),
+    ("Axis Bank Ltd", "AXISBANK.NS"),
+    ("Federal Bank", "FEDERALBNK.NS"),
+    ("IDFC First Bank", "IDFCFIRSTB.NS"),
+    ("Bandhan Bank", "BANDHANBNK.NS"),
+    ("IndusInd Bank", "INDUSINDBK.NS"),
+    ("Reliance Industries (RIL)", "RELIANCE.NS"),
+    ("Tata Consultancy Services (TCS)", "TCS.NS"),
+    ("Tata Motors Ltd", "TATAMOTORS.NS"),
+    ("Tata Steel Ltd", "TATASTEEL.NS"),
+    ("Tata Power Co Ltd", "TATAPOWER.NS"),
+    ("Tata Technologies", "TATATECH.NS"),
+    ("Tata Elxsi Ltd", "TATAELXSI.NS"),
+    ("Tata Consumer Products", "TATACONSUM.NS"),
+    ("Infosys Ltd", "INFY.NS"),
+    ("Wipro Ltd", "WIPRO.NS"),
+    ("HCL Technologies", "HCLTECH.NS"),
+    ("Tech Mahindra", "TECHM.NS"),
+    ("LTIMindtree", "LTIM.NS"),
+    ("Persistent Systems", "PERSISTENT.NS"),
+    ("Coforge Ltd", "COFORGE.NS"),
+    ("KPIT Technologies", "KPITTECH.NS"),
+    ("Bharti Airtel", "BHARTIARTL.NS"),
+    ("ITC Ltd", "ITC.NS"),
+    ("Hindustan Unilever (HUL)", "HINDUNILVR.NS"),
+    ("Nestle India", "NESTLEIND.NS"),
+    ("Britannia Industries", "BRITANNIA.NS"),
+    ("Dabur India", "DABUR.NS"),
+    ("Godrej Consumer", "GODREJCP.NS"),
+    ("Maruti Suzuki India", "MARUTI.NS"),
+    ("Mahindra & Mahindra (M&M)", "M&M.NS"),
+    ("Bajaj Auto Ltd", "BAJAJ-AUTO.NS"),
+    ("TVS Motor Co", "TVSMOTOR.NS"),
+    ("Eicher Motors", "EICHERMOT.NS"),
+    ("Hero MotoCorp", "HEROMOTOCO.NS"),
+    ("Ola Electric", "OLAELEC.NS"),
+    ("Olectra Greentech", "OLECTRA.NS"),
+    ("JBM Auto", "JBMA.NS"),
+    ("Exide Industries", "EXIDEIND.NS"),
+    ("Amara Raja Energy", "ARE&M.NS"),
+    ("Sona BLW Precision", "SONACOMS.NS"),
+    ("Larsen & Toubro (L&T)", "LT.NS"),
+    ("GMR Airports Infra", "GMRINFRA.NS"),
+    ("IRFC (Railway Finance)", "IRFC.NS"),
+    ("RVNL (Rail Vikas)", "RVNL.NS"),
+    ("IRCTC", "IRCTC.NS"),
+    ("Titagarh Rail Systems", "TITAGARH.NS"),
+    ("Jupiter Wagons", "JWL.NS"),
+    ("RailTel Corporation", "RAILTEL.NS"),
+    ("IRCON International", "IRCON.NS"),
+    ("RITES Ltd", "RITES.NS"),
+    ("Hindustan Aeronautics (HAL)", "HAL.NS"),
+    ("Bharat Electronics (BEL)", "BEL.NS"),
+    ("Mazagon Dock Shipbuilders", "MAZDOCK.NS"),
+    ("Cochin Shipyard", "COCHINSHIP.NS"),
+    ("Bharat Dynamics (BDL)", "BDL.NS"),
+    ("Solar Industries", "SOLARINDS.NS"),
+    ("Data Patterns India", "DATAPATTNS.NS"),
+    ("Paras Defence", "PARAS.NS"),
+    ("Suzlon Energy", "SUZLON.NS"),
+    ("IREDA", "IREDA.NS"),
+    ("Adani Green Energy", "ADANIGREEN.NS"),
+    ("Inox Wind", "INOXWIND.NS"),
+    ("KPI Green Energy", "KPIGREEN.NS"),
+    ("Waaree Energies", "WAAREE.NS"),
+    ("Premier Energies", "PREMIERENE.NS"),
+    ("NTPC Ltd", "NTPC.NS"),
+    ("Power Grid Corp", "POWERGRID.NS"),
+    ("NHPC Ltd", "NHPC.NS"),
+    ("SJVN Ltd", "SJVN.NS"),
+    ("ONGC", "ONGC.NS"),
+    ("Oil India Ltd", "OIL.NS"),
+    ("Bharat Petroleum (BPCL)", "BPCL.NS"),
+    ("Indian Oil (IOC)", "IOC.NS"),
+    ("GAIL India", "GAIL.NS"),
+    ("Coal India Ltd", "COALINDIA.NS"),
+    ("Kaynes Technology", "KAYNES.NS"),
+    ("CG Power & Industrial", "CGPOWER.NS"),
+    ("Dixon Technologies", "DIXON.NS"),
+    ("ASM Technologies", "ASMTEC.BO"),
+    ("SPEL Semiconductor", "SPEL.BO"),
+    ("Sun Pharma", "SUNPHARMA.NS"),
+    ("Dr. Reddy's Lab", "DRREDDY.NS"),
+    ("Cipla Ltd", "CIPLA.NS"),
+    ("Divi's Laboratories", "DIVISLAB.NS"),
+    ("Apollo Hospitals", "APOLLOHOSP.NS"),
+    ("Lupin Ltd", "LUPIN.NS"),
+    ("Max Healthcare", "MAXHEALTH.NS"),
+    ("Aurobindo Pharma", "AUROPHARMA.NS"),
+    ("Torrent Pharma", "TORNTPHARM.NS"),
+    ("Zydus Lifesciences", "ZYDUSLIFE.NS"),
+    ("JSW Steel", "JSWSTEEL.NS"),
+    ("Hindalco Industries", "HINDALCO.NS"),
+    ("Jindal Steel & Power", "JINDALSTEL.NS"),
+    ("Vedanta Ltd", "VEDL.NS"),
+    ("NMDC Ltd", "NMDC.NS"),
+    ("DLF Limited", "DLF.NS"),
+    ("Macrotech Dev (Lodha)", "LODHA.NS"),
+    ("Godrej Properties", "GODREJPROP.NS"),
+    ("Oberoi Realty", "OBEROIRLTY.NS"),
+    ("Phoenix Mills", "PHOENIXLTD.NS"),
+    ("Bajaj Finance Ltd", "BAJFINANCE.NS"),
+    ("Bajaj Finserv Ltd", "BAJAJFINSV.NS"),
+    ("Jio Financial Services", "JIOFIN.NS"),
+    ("Zomato Ltd", "ZOMATO.NS"),
+    ("Paytm (One97)", "PAYTM.NS"),
+    ("Nykaa (FSN E-Commerce)", "NYKAA.NS"),
+    ("Policybazaar (PB Fintech)", "POLICYBZR.NS"),
+    ("BSE Limited", "BSE.NS"),
+    ("CDSL", "CDSL.NS"),
+    ("Angel One", "ANGELONE.NS"),
+    ("HUDCO", "HUDCO.NS"),
+    ("NBCC India", "NBCC.NS"),
+    ("PFC Limited", "PFC.NS"),
+    ("REC Limited", "REC.NS"),
+    ("NIFTY 50 Index", "^NSEI"),
+    ("SENSEX Index", "^BSESN"),
+    ("BANK NIFTY Index", "^NSEBANK"),
+    ("NASDAQ 100 Index", "^NDX"),
+    ("S&P 500 Index", "^GSPC"),
+    ("Apple Inc (US)", "AAPL"),
+    ("Microsoft Corp (US)", "MSFT"),
+    ("NVIDIA Corp (US)", "NVDA"),
+    ("Alphabet Google (US)", "GOOGL"),
+    ("Amazon.com (US)", "AMZN"),
+    ("Meta Platforms (US)", "META"),
+    ("Tesla Inc (US)", "TSLA"),
+    ("Broadcom Inc (US)", "AVGO"),
+    ("Palantir Technologies (US)", "PLTR"),
+    ("Taiwan Semi (TSMC - US)", "TSM"),
+    ("AMD (US)", "AMD"),
+    ("Qualcomm (US)", "QCOM"),
+    ("Intel Corp (US)", "INTC"),
+    ("JPMorgan Chase (US)", "JPM"),
+    ("Berkshire Hathaway (US)", "BRK-B"),
+]
 
-# --- UPCOMING & ACTIVE IPO RADAR DATA ---
+# --- UPCOMING & ACTIVE IPO RADAR ---
 UPCOMING_IPOS_DATA = [
     {
         "IPO Name": "Waaree Energies Limited",
         "Type": "Mainboard / Solar Energy",
         "Price Band": "₹1,427 - ₹1,503",
-        "Estimated GMP": "+95% (Strong Premium)",
-        "Rating Agency Review": "4.8/5 (Outstanding Demand)",
-        "AI Verdict": "🟢 STRONG APPLY (मजबूत लिस्टिंग गेन व लॉन्ग टर्म)",
+        "Estimated GMP": "+95% (Strong)",
+        "Rating Review": "4.8/5 (Institutional Heavy)",
+        "AI Verdict": "🟢 STRONG APPLY (लिस्टिंग गेन व लॉन्ग टर्म)",
     },
     {
         "IPO Name": "Hyundai Motor India",
-        "Type": "Mainboard / Auto Giant",
+        "Type": "Mainboard / Auto Leader",
         "Price Band": "₹1,865 - ₹1,960",
-        "Estimated GMP": "+8% (Moderate)",
-        "Rating Agency Review": "4.0/5 (Market Leader / Long Term)",
-        "AI Verdict": "🟢 APPLY FOR LONG TERM (लॉन्ग टर्म निवेश हेतु)",
+        "Estimated GMP": "+8% (Steady)",
+        "Rating Review": "4.0/5 (Consistent Growth)",
+        "AI Verdict": "🟢 APPLY FOR LONG TERM",
     },
     {
         "IPO Name": "Swiggy Limited",
-        "Type": "Mainboard / Tech Delivery",
+        "Type": "Mainboard / Quick Commerce",
         "Price Band": "₹371 - ₹390",
-        "Estimated GMP": "+12% (Steady)",
-        "Rating Agency Review": "3.8/5 (High Growth Consumer Tech)",
-        "AI Verdict": "🟡 APPLY FOR HIGH RISK / GROWTH (जोखिम क्षमता अनुसार)",
+        "Estimated GMP": "+12% (Moderate)",
+        "Rating Review": "3.8/5 (High Growth)",
+        "AI Verdict": "🟡 APPLY FOR HIGH RISK / GROWTH",
     },
     {
         "IPO Name": "NTPC Green Energy Limited",
         "Type": "Mainboard / PSU Renewable",
         "Price Band": "₹102 - ₹108",
-        "Estimated GMP": "+25% (Robust PSU)",
-        "Rating Agency Review": "4.6/5 (Sovereign Backed Expansion)",
-        "AI Verdict": "🟢 STRONG APPLY (डिविडेंड व कैपिटल ग्रोथ)",
+        "Estimated GMP": "+25% (Robust)",
+        "Rating Review": "4.6/5 (PSU Multi-Year Bet)",
+        "AI Verdict": "🟢 STRONG APPLY",
     },
 ]
 
-# --- SIDEBAR CONTROLS ---
+# --- SIDEBAR SETTINGS ---
 st.sidebar.markdown("### ⚙️ सेटिंग्स / Settings")
 language = st.sidebar.radio(
     "🌐 भाषा चुनें / Select Language:",
@@ -330,12 +273,6 @@ buy_price = st.sidebar.number_input(
     value=0.0,
     step=1.0,
     help="Yield on Cost और New Buy/Averaging Price निकालने के लिए दर्ज करें।",
-)
-holding_qty = st.sidebar.number_input(
-    get_txt("होल्डिंग क्वांटिटी (Holding Quantity):", "Holding Qty:"),
-    min_value=0,
-    value=0,
-    step=1,
 )
 
 st.sidebar.markdown("---")
@@ -369,11 +306,98 @@ st.markdown(
 # Header
 st.title("TradingView Pro | Global Stock, F&O & Fundamental AI Terminal")
 st.caption(
-    "Complete 30+ Nifty Indices & NSE/BSE Equities • Live F&O/OI Derivatives •"
-    " Fundamental Health • Re-Buy/Averaging Price • Upcoming IPO Radar"
+    "Universal Search (Bank of India, Baroda, Canara, NSE/BSE & US) • Option"
+    " Chain/OI • Fundamental Health • Re-Buy Price"
 )
 
-# --- TECHNICAL & VALUATION CALCULATIONS ---
+# --- SEARCH CONTROLS ---
+st.markdown(
+    f"<div class='sec-header'>{get_txt('🔎 ग्लोबल स्टॉक सर्च (Universal Search - NSE, BSE & US Equities)', 'Universal Stock & Market Search')}</div>",
+    unsafe_allow_html=True,
+)
+
+stock_name_map = {
+    f"{name} [{ticker}]": ticker for name, ticker in ALL_GLOBAL_STOCKS
+}
+stock_options_list = list(stock_name_map.keys()) + [
+    "➕ Type Custom Symbol (अन्य कोई भी सिंबल लिखें)"
+]
+
+selected_display = st.selectbox(
+    get_txt(
+        "🔎 कंपनी का नाम या सिंबल टाइप करें (Type Any Stock Name):",
+        "Search Any Stock Name / Symbol:",
+    ),
+    options=stock_options_list,
+    index=0,
+    help=(
+        "Bank of India, Bank of Baroda, Canara Bank, Tata, Apple या कोई भी नाम"
+        " यहाँ टाइप करें।"
+    ),
+)
+
+if selected_display == "➕ Type Custom Symbol (अन्य कोई भी सिंबल लिखें)":
+    custom_in = (
+        st.text_input(
+            get_txt(
+                "सिंबल लिखें (उदा. BANKINDIA.NS, CANBK.NS, NVDA):",
+                "Enter Symbol:",
+            ),
+            value="BANKINDIA.NS",
+        )
+        .strip()
+        .upper()
+    )
+    symbol = (
+        f"{custom_in}.NS"
+        if (
+            "." not in custom_in
+            and not custom_in.startswith("^")
+            and len(custom_in) > 3
+            and custom_in.isalpha()
+        )
+        else custom_in
+    )
+else:
+    symbol = stock_name_map[selected_display]
+
+rcol1, rcol2 = st.columns([1, 1])
+with rcol1:
+    range_type = st.radio(
+        get_txt("Range Type / मोड:", "Range Type:"),
+        [
+            get_txt("Standard Presets (1D, 1M, 1Y...)", "Standard Presets"),
+            get_txt("📅 Custom Date Range", "Custom Date Range"),
+        ],
+        horizontal=True,
+    )
+duration_map = {
+    "1 Day / 1 दिन": "1d",
+    "5 Days / 5 दिन": "5d",
+    "1 Month / 1 माह": "1mo",
+    "6 Months / 6 माह": "6mo",
+    "1 Year / 1 वर्ष": "1y",
+    "5 Years / 5 वर्ष": "5y",
+    "Max / अधिकतम": "max",
+}
+with rcol2:
+    if "Standard" in range_type:
+        chosen_dur_label = st.selectbox(
+            get_txt("समयावधि चुनें / Duration:", "Duration:"),
+            list(duration_map.keys()),
+            index=2,
+        )
+        selected_period = duration_map[chosen_dur_label]
+        start_date, end_date = None, None
+    else:
+        d_c1, d_c2 = st.columns(2)
+        start_date = d_c1.date_input(
+            "Start Date", value=datetime.date(2023, 1, 1)
+        )
+        end_date = d_c2.date_input("End Date", value=datetime.date.today())
+        selected_period = None
+
+# --- TECHNICAL & VALUATION FORMULAS ---
 def calculate_rsi(series, period=14):
     delta = series.diff()
     gain = (delta.where(delta > 0, 0)).rolling(window=period).mean()
@@ -408,7 +432,6 @@ def calculate_intrinsic_value(eps, book_value):
 def evaluate_fundamental_health(info):
     score = 0
     factors = []
-
     op_margin = info.get("operatingMargins") or 0.0
     if op_margin > 0.15:
         score += 2
@@ -471,7 +494,6 @@ def evaluate_fundamental_health(info):
     return health_pct, category, style_class, factors
 
 
-# --- OPTION CHAIN & OI ANALYTICS ENGINE ---
 def fetch_option_chain_oi(ticker_obj, cmp):
     try:
         expirations = ticker_obj.options
@@ -485,7 +507,6 @@ def fetch_option_chain_oi(ticker_obj, cmp):
         total_put_oi = puts["openInterest"].sum() if "openInterest" in puts else 0
         pcr = round(total_put_oi / (total_call_oi + 1e-9), 2)
 
-        # Sentiment based on PCR
         if pcr > 1.25:
             oi_sentiment = "BULLISH (मजबूत पुट राइटिंग / तेजी का रुख)"
             oi_action = "🟢 BUY ON DIPS"
@@ -496,7 +517,6 @@ def fetch_option_chain_oi(ticker_obj, cmp):
             oi_sentiment = "NEUTRAL / RANGEBOUND (संतुलित दायरा)"
             oi_action = "🟡 RANGE ACCUMULATION"
 
-        # Max Pain Proxy & Option Straddle Fair Price Range
         max_call_strike = (
             calls.loc[calls["openInterest"].idxmax()]["strike"]
             if not calls.empty and "openInterest" in calls
@@ -524,114 +544,18 @@ def fetch_option_chain_oi(ticker_obj, cmp):
         return None
 
 
-# --- STOCK SELECTION UI ---
-st.markdown(
-    f"<div class='sec-header'>{get_txt('🔎 30+ NIFTY इंडेक्स, सेक्टर्स व NSE/US स्टॉक स्क्रीनर', '30+ NIFTY Indices & Universal Stock Screener')}</div>",
-    unsafe_allow_html=True,
-)
-
-col_idx, col_stk = st.columns([1, 2])
-with col_idx:
-    selected_index = st.selectbox(
-        get_txt("📂 इंडेक्स / सेक्टर बास्केट चुनें:", "Select Index / Sector:"),
-        list(INDEX_STOCKS_MAP.keys()),
-        index=0,
-    )
-
-stock_items = INDEX_STOCKS_MAP[selected_index]
-stock_map = {f"{name} [{ticker}]": ticker for name, ticker in stock_items}
-stock_options = list(stock_map.keys()) + [
-    "➕ Type Any Custom Symbol (अन्य कोई भी NSE/BSE या US सिंबल)"
-]
-
-with col_stk:
-    selected_stock_display = st.selectbox(
-        get_txt(
-            "🔎 स्टॉक चुनें या नाम टाइप करें (Type to Search Any Stock):",
-            "Select or Type Stock Name:",
-        ),
-        options=stock_options,
-        index=0,
-        help="बैंक ऑफ बड़ौदा, केनरा बैंक, टाटा, Reliance या कोई भी स्टॉक सर्च करें।",
-    )
-
-if (
-    selected_stock_display
-    == "➕ Type Any Custom Symbol (अन्य कोई भी NSE/BSE या US सिंबल)"
-):
-    custom_sym = (
-        st.text_input(
-            get_txt(
-                "स्टॉक सिंबल दर्ज करें (उदा. BANKBARODA.NS, CANBK.NS, ZOMATO.NS,"
-                " NVDA):",
-                "Enter Stock Symbol:",
-            ),
-            value="BANKBARODA.NS",
-        )
-        .strip()
-        .upper()
-    )
-    symbol = (
-        f"{custom_sym}.NS"
-        if (
-            "." not in custom_sym
-            and not custom_sym.startswith("^")
-            and len(custom_sym) > 3
-            and custom_sym.isalpha()
-        )
-        else custom_sym
-    )
-else:
-    symbol = stock_map[selected_stock_display]
-
-# Duration / Presets
-rcol1, rcol2 = st.columns([1, 1])
-with rcol1:
-    range_type = st.radio(
-        get_txt("Range Type / मोड:", "Range Type:"),
-        [
-            get_txt("Standard Presets (1D, 1M, 1Y...)", "Standard Presets"),
-            get_txt("📅 Custom Date Range", "Custom Date Range"),
-        ],
-        horizontal=True,
-    )
-duration_map = {
-    "1 Day / 1 दिन": "1d",
-    "5 Days / 5 दिन": "5d",
-    "1 Month / 1 माह": "1mo",
-    "6 Months / 6 माह": "6mo",
-    "1 Year / 1 वर्ष": "1y",
-    "5 Years / 5 वर्ष": "5y",
-    "Max / अधिकतम": "max",
-}
-with rcol2:
-    if "Standard" in range_type:
-        chosen_dur_label = st.selectbox(
-            get_txt("समयावधि चुनें / Duration:", "Duration:"),
-            list(duration_map.keys()),
-            index=2,
-        )
-        selected_period = duration_map[chosen_dur_label]
-        start_date, end_date = None, None
-    else:
-        d_c1, d_c2 = st.columns(2)
-        start_date = d_c1.date_input(
-            "Start Date", value=datetime.date(2023, 1, 1)
-        )
-        end_date = d_c2.date_input("End Date", value=datetime.date.today())
-        selected_period = None
-
-# --- 1. RSI ZONE & INDEX SCREENER EXPANDER ---
+# --- 1. POPULAR STOCKS LIVE SCREENER GRID ---
 with st.expander(
-    f"📊 {selected_index} - {get_txt('लाइव स्क्रीनर, RSI 10-100 ज़ोन व AI बाय/सेल सिग्नल ग्रिड', 'Live Screener, RSI Zones & Signals Grid')}",
+    get_txt(
+        "📊 प्रमुख स्टॉक्स का लाइव स्क्रीनर, RSI 10-100 ज़ोन व AI बाय/सेल ग्रिड",
+        "Live Screener, RSI Zones & Signals Grid",
+    ),
     expanded=False,
 ):
-    if st.button(
-        "⚡ रन बास्केट स्कैन (Run Live Screener Scan)", key="run_screener"
-    ):
-        with st.spinner("Scanning all stocks in basket..."):
+    if st.button("⚡ रन स्क्रीनर स्कैन (Run Screener Scan)", key="run_screener"):
+        with st.spinner("Scanning top stocks..."):
             screener_rows = []
-            for s_name, s_ticker in stock_items:
+            for s_name, s_ticker in ALL_GLOBAL_STOCKS[:25]:
                 try:
                     s_t = yf.Ticker(s_ticker)
                     s_h = s_t.history(period="3mo")
@@ -698,7 +622,7 @@ with st.expander(
                     use_container_width=True,
                 )
 
-# --- 2. UPCOMING & ACTIVE IPO RADAR (GMP & RATINGS) ---
+# --- 2. UPCOMING IPOS RADAR ---
 with st.expander(
     get_txt(
         "🚀 Upcoming & New IPOs Radar (Grey Market Premium, Ratings & AI"
@@ -807,9 +731,9 @@ def generate_premium_excel(summary_data, hist_df, div_df):
     return output.getvalue()
 
 
-# Execution Block
+# Execution
 if symbol:
-    with st.spinner(f"Fetching Deep Analytics for {symbol}..."):
+    with st.spinner(f"Fetching Live Market Analytics for {symbol}..."):
         ticker_obj, df_hist, stock_info, ath_val, df_div = fetch_stock_payload(
             symbol, selected_period, start_date, end_date
         )
@@ -951,7 +875,7 @@ if symbol:
             )
         )
 
-        # AI Calculated Fair Buying Price (सही खरीद मूल्य)
+        # AI Calculated Fair Buying Price
         intrinsic_val = (
             calculate_intrinsic_value(eps, book_val)
             if eps and book_val
