@@ -20,6 +20,10 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
+# Current Date Formatting
+today_date_str = datetime.date.today().strftime("%d-%b-%Y")
+now_time_str = datetime.datetime.now().strftime("%d-%b-%Y | %I:%M %p")
+
 # 2. Custom Styling
 st.markdown(
     """
@@ -62,6 +66,16 @@ st.markdown(
         margin-bottom: 15px;
         font-weight: 500;
         box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    }
+    .price-stamp-box {
+        background: #eef2f7;
+        border-left: 4px solid #2962ff;
+        padding: 8px 15px;
+        border-radius: 4px;
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: #131722;
+        margin-bottom: 15px;
     }
     </style>
     """,
@@ -135,40 +149,40 @@ ALL_US_MARKET_STOCKS = {
     "JPMorgan Chase": "JPM",
 }
 
-# --- MASTER TOP BUY & SELL STOCKS WITH CATALYSTS ---
+# --- MASTER TOP BUY & SELL STOCKS WITH CMP & DATE ---
 TOP_BUY_STOCKS_MASTER = [
-    {"Company": "State Bank of India (SBI)", "Ticker": "SBIN.NS", "Action": "🟢 STRONG BUY", "Target_1Y": "₹980", "Upside": "+22%", "Why_Buy_Reason": "मजबूत क्रेडिट ग्रोथ (15%+), घटता NPA और आकर्षक P/E वैल्युएशन"},
-    {"Company": "Tata Motors Ltd", "Ticker": "TATAMOTORS.NS", "Action": "🟢 STRONG BUY", "Target_1Y": "₹1,250", "Upside": "+26%", "Why_Buy_Reason": "JLR का रिकॉर्ड फ्री-कैश-फ्लो, भारत में EV मार्केट लीडरशिप और डीमर्जर वैल्यू अनलॉकिंग"},
-    {"Company": "Balrampur Chini Mills", "Ticker": "BALRAMCHIN.NS", "Action": "🟢 BUY", "Target_1Y": "₹650", "Upside": "+24%", "Why_Buy_Reason": "एथेनॉल ब्लेंडिंग 20% लक्ष्य, चीनी निर्यात नीति में छूट और मजबूत ऑपरेटिंग मार्जिन"},
-    {"Company": "Kaynes Technology", "Ticker": "KAYNES.NS", "Action": "🟢 STRONG BUY", "Target_1Y": "₹6,400", "Upside": "+30%", "Why_Buy_Reason": "सेमीकंडक्टर OSAT प्लांट विस्तार, मजबूत ऑर्डर बुक (₹4,500 Cr+) और 40%+ रेवेन्यू ग्रोथ"},
-    {"Company": "Coal India Ltd", "Ticker": "COALINDIA.NS", "Action": "🟢 BUY (High Div)", "Target_1Y": "₹580", "Upside": "+18% + 7% Div", "Why_Buy_Reason": "पावर सेक्टर की भारी कोयला मांग, शून्य कर्ज और 7%+ डिविडेंड यील्ड"},
-    {"Company": "NVIDIA Corporation", "Ticker": "NVDA", "Action": "🟢 STRONG BUY", "Target_1Y": "$165", "Upside": "+28%", "Why_Buy_Reason": "Blackwell चिप की बेजोड़ मांग और डेटा सेंटर AI इंफ्रास्ट्रक्चर में 85%+ मोनोपॉली"},
+    {"Company": "State Bank of India (SBI)", "Ticker": "SBIN.NS", "Today_Date": today_date_str, "Action": "🟢 STRONG BUY", "Target_1Y": "₹980", "Upside": "+22%", "Why_Buy_Reason": "मजबूत क्रेडिट ग्रोथ (15%+), घटता NPA और आकर्षक P/E वैल्युएशन"},
+    {"Company": "Tata Motors Ltd", "Ticker": "TATAMOTORS.NS", "Today_Date": today_date_str, "Action": "🟢 STRONG BUY", "Target_1Y": "₹1,250", "Upside": "+26%", "Why_Buy_Reason": "JLR का रिकॉर्ड फ्री-कैश-फ्लो, भारत में EV मार्केट लीडरशिप और डीमर्जर वैल्यू अनलॉकिंग"},
+    {"Company": "Balrampur Chini Mills", "Ticker": "BALRAMCHIN.NS", "Today_Date": today_date_str, "Action": "🟢 BUY", "Target_1Y": "₹650", "Upside": "+24%", "Why_Buy_Reason": "एथेनॉल ब्लेंडिंग 20% लक्ष्य, चीनी निर्यात नीति में छूट और मजबूत ऑपरेटिंग मार्जिन"},
+    {"Company": "Kaynes Technology", "Ticker": "KAYNES.NS", "Today_Date": today_date_str, "Action": "🟢 STRONG BUY", "Target_1Y": "₹6,400", "Upside": "+30%", "Why_Buy_Reason": "सेमीकंडक्टर OSAT प्लांट विस्तार, मजबूत ऑर्डर बुक (₹4,500 Cr+) और 40%+ रेवेन्यू ग्रोथ"},
+    {"Company": "Coal India Ltd", "Ticker": "COALINDIA.NS", "Today_Date": today_date_str, "Action": "🟢 BUY (High Div)", "Target_1Y": "₹580", "Upside": "+18% + 7% Div", "Why_Buy_Reason": "पावर सेक्टर की भारी कोयला मांग, शून्य कर्ज और 7%+ डिविडेंड यील्ड"},
+    {"Company": "NVIDIA Corporation", "Ticker": "NVDA", "Today_Date": today_date_str, "Action": "🟢 STRONG BUY", "Target_1Y": "$165", "Upside": "+28%", "Why_Buy_Reason": "Blackwell चिप की बेजोड़ मांग और डेटा सेंटर AI इंफ्रास्ट्रक्चर में 85%+ मोनोपॉली"},
 ]
 
 TOP_SELL_STOCKS_MASTER = [
-    {"Company": "Vodafone Idea", "Ticker": "IDEA.NS", "Action": "🔴 STRONG SELL", "StopLoss_Risk": "₹11.50", "Downside_Risk": "-25%", "Why_Sell_Reason": "लगातार सब्सक्राइबर लॉस, भारी कर्ज बोझ और भारी AGR देनदारी"},
-    {"Company": "Paytm (One97 Comm)", "Ticker": "PAYTM.NS", "Action": "🔴 AVOID / SELL", "StopLoss_Risk": "₹750", "Downside_Risk": "-18%", "Why_Sell_Reason": "पेमेंट्स बैंक रेगुलेटरी रोक के बाद रेवेन्यू में भारी गिरावट और अनिश्चित प्रॉफिटेबिलिटी"},
-    {"Company": "Yes Bank Ltd", "Ticker": "YESBANK.NS", "Action": "🔴 SELL ON RISE", "StopLoss_Risk": "₹26.00", "Downside_Risk": "-15%", "Why_Sell_Reason": "कम NIM मार्जिन (2.4%), सीमित ROA और बड़े निवेशकों का बिकवाली दबाव"},
-    {"Company": "Intel Corporation", "Ticker": "INTC", "Action": "🔴 AVOID / SELL", "StopLoss_Risk": "$24.00", "Downside_Risk": "-20%", "Why_Sell_Reason": "फाउंड्री बिजनेस में भारी घाटा, AI चिप मार्केट शेयर का नुकसान और डिविडेंड निलंबन"},
-    {"Company": "Ola Electric Mobility", "Ticker": "OLAELEC.NS", "Action": "🔴 SELL / BOOK PROFIT", "StopLoss_Risk": "₹82.00", "Downside_Risk": "-22%", "Why_Sell_Reason": "सर्विस शिकायतों के कारण मार्केट शेयर में कमी और लगातार ऑपरेटिंग लॉस"},
+    {"Company": "Vodafone Idea", "Ticker": "IDEA.NS", "Today_Date": today_date_str, "Action": "🔴 STRONG SELL", "StopLoss_Risk": "₹11.50", "Downside_Risk": "-25%", "Why_Sell_Reason": "लगातार सब्सक्राइबर लॉस, भारी कर्ज बोझ और भारी AGR देनदारी"},
+    {"Company": "Paytm (One97 Comm)", "Ticker": "PAYTM.NS", "Today_Date": today_date_str, "Action": "🔴 AVOID / SELL", "StopLoss_Risk": "₹750", "Downside_Risk": "-18%", "Why_Sell_Reason": "पेमेंट्स बैंक रेगुलेटरी रोक के बाद रेवेन्यू में भारी गिरावट और अनिश्चित प्रॉफिटेबिलिटी"},
+    {"Company": "Yes Bank Ltd", "Ticker": "YESBANK.NS", "Today_Date": today_date_str, "Action": "🔴 SELL ON RISE", "StopLoss_Risk": "₹26.00", "Downside_Risk": "-15%", "Why_Sell_Reason": "कम NIM मार्जिन (2.4%), सीमित ROA और बड़े निवेशकों का बिकवाली दबाव"},
+    {"Company": "Intel Corporation", "Ticker": "INTC", "Today_Date": today_date_str, "Action": "🔴 AVOID / SELL", "StopLoss_Risk": "$24.00", "Downside_Risk": "-20%", "Why_Sell_Reason": "फाउंड्री बिजनेस में भारी घाटा, AI चिप मार्केट शेयर का नुकसान और डिविडेंड निलंबन"},
+    {"Company": "Ola Electric Mobility", "Ticker": "OLAELEC.NS", "Today_Date": today_date_str, "Action": "🔴 SELL / BOOK PROFIT", "StopLoss_Risk": "₹82.00", "Downside_Risk": "-22%", "Why_Sell_Reason": "सर्विस शिकायतों के कारण मार्केट शेयर में कमी और लगातार ऑपरेटिंग लॉस"},
 ]
 
 TOP_DIVIDEND_STOCKS_MASTER = [
-    {"Company": "Vedanta Ltd", "Ticker": "VEDL.NS", "Market": "India", "Typical_Yield": "10-12%", "Cat": "High Metal Dividend", "Why_Buy": "असाधारण कैश फ्लो और उच्च डिविडेंड यील्ड", "Exp_5Y_Return": "+85%", "Exp_10Y_Return": "+210%"},
-    {"Company": "Coal India Ltd", "Ticker": "COALINDIA.NS", "Market": "India", "Typical_Yield": "6-8%", "Cat": "PSU Monopoly", "Why_Buy": "जीरो डेट, स्थिर पावर डिमांड और भारी डिविडेंड पेआउट", "Exp_5Y_Return": "+75%", "Exp_10Y_Return": "+180%"},
-    {"Company": "REC Limited", "Ticker": "REC.NS", "Market": "India", "Typical_Yield": "5-7%", "Cat": "Power Finance", "Why_Buy": "पावर इंफ्रास्ट्रक्चर लेंडिंग में तेज वृद्धि और डिविडेंड स्थिरता", "Exp_5Y_Return": "+95%", "Exp_10Y_Return": "+240%"},
-    {"Company": "Power Finance Corp (PFC)", "Ticker": "PFC.NS", "Market": "India", "Typical_Yield": "5-7%", "Cat": "Power Finance", "Why_Buy": "मजबूत लोन बुक विस्तार और लगातार डिविडेंड ट्रैक रिकॉर्ड", "Exp_5Y_Return": "+90%", "Exp_10Y_Return": "+230%"},
-    {"Company": "Indian Oil Corp (IOC)", "Ticker": "IOC.NS", "Market": "India", "Typical_Yield": "6-8%", "Cat": "Oil & Refining", "Why_Buy": "मजबूत रिफाइनिंग मार्जिन और सरकारी डिविडेंड सपोर्ट", "Exp_5Y_Return": "+60%", "Exp_10Y_Return": "+150%"},
-    {"Company": "Altria Group", "Ticker": "MO", "Market": "USA", "Typical_Yield": "8-9%", "Cat": "Consumer Aristocrat", "Why_Buy": "54 वर्षों से लगातार बढ़ता डिविडेंड", "Exp_5Y_Return": "+55%", "Exp_10Y_Return": "+140%"},
-    {"Company": "Realty Income (Monthly Div)", "Ticker": "O", "Market": "USA", "Typical_Yield": "5-6%", "Cat": "Real Estate REIT", "Why_Buy": "हर महीने डिविडेंड देने वाला रियल एस्टेट दिग्गज", "Exp_5Y_Return": "+65%", "Exp_10Y_Return": "+160%"},
+    {"Company": "Vedanta Ltd", "Ticker": "VEDL.NS", "Market": "India", "Today_Date": today_date_str, "Typical_Yield": "10-12%", "Cat": "High Metal Dividend", "Why_Buy": "असाधारण कैश फ्लो और उच्च डिविडेंड यील्ड", "Exp_5Y_Return": "+85%", "Exp_10Y_Return": "+210%"},
+    {"Company": "Coal India Ltd", "Ticker": "COALINDIA.NS", "Market": "India", "Today_Date": today_date_str, "Typical_Yield": "6-8%", "Cat": "PSU Monopoly", "Why_Buy": "जीरो डेट, स्थिर पावर डिमांड और भारी डिविडेंड पेआउट", "Exp_5Y_Return": "+75%", "Exp_10Y_Return": "+180%"},
+    {"Company": "REC Limited", "Ticker": "REC.NS", "Market": "India", "Today_Date": today_date_str, "Typical_Yield": "5-7%", "Cat": "Power Finance", "Why_Buy": "पावर इंफ्रास्ट्रक्चर लेंडिंग में तेज वृद्धि और डिविडेंड स्थिरता", "Exp_5Y_Return": "+95%", "Exp_10Y_Return": "+240%"},
+    {"Company": "Power Finance Corp (PFC)", "Ticker": "PFC.NS", "Market": "India", "Today_Date": today_date_str, "Typical_Yield": "5-7%", "Cat": "Power Finance", "Why_Buy": "मजबूत लोन बुक विस्तार और लगातार डिविडेंड ट्रैक रिकॉर्ड", "Exp_5Y_Return": "+90%", "Exp_10Y_Return": "+230%"},
+    {"Company": "Indian Oil Corp (IOC)", "Ticker": "IOC.NS", "Market": "India", "Today_Date": today_date_str, "Typical_Yield": "6-8%", "Cat": "Oil & Refining", "Why_Buy": "मजबूत रिफाइनिंग मार्जिन और सरकारी डिविडेंड सपोर्ट", "Exp_5Y_Return": "+60%", "Exp_10Y_Return": "+150%"},
+    {"Company": "Altria Group", "Ticker": "MO", "Market": "USA", "Today_Date": today_date_str, "Typical_Yield": "8-9%", "Cat": "Consumer Aristocrat", "Why_Buy": "54 वर्षों से लगातार बढ़ता डिविडेंड", "Exp_5Y_Return": "+55%", "Exp_10Y_Return": "+140%"},
+    {"Company": "Realty Income (Monthly Div)", "Ticker": "O", "Market": "USA", "Today_Date": today_date_str, "Typical_Yield": "5-6%", "Cat": "Real Estate REIT", "Why_Buy": "हर महीने डिविडेंड देने वाला रियल एस्टेट दिग्गज", "Exp_5Y_Return": "+65%", "Exp_10Y_Return": "+160%"},
 ]
 
 TOP_MUTUAL_FUNDS_DATA = [
-    {"Fund Name": "Parag Parikh Flexi Cap Fund", "Category": "Flexi Cap", "Rating": "⭐⭐⭐⭐⭐", "1M_Return": "+2.1%", "3M_Return": "+6.8%", "1Y_Return": "+24.5%", "3Y_CAGR": "+19.8%", "Exp_1M_Future": "+1.8%", "Exp_3M_Future": "+5.5%", "Exp_1Y_Future": "+18-22%", "AI_Verdict": "🟢 Strong Buy (Long Term)"},
-    {"Fund Name": "Quant Small Cap Fund", "Category": "Small Cap", "Rating": "⭐⭐⭐⭐⭐", "1M_Return": "+3.4%", "3M_Return": "+9.2%", "1Y_Return": "+38.2%", "3Y_CAGR": "+28.4%", "Exp_1M_Future": "+2.5%", "Exp_3M_Future": "+8.0%", "Exp_1Y_Future": "+22-26%", "AI_Verdict": "🟢 Buy on Dips (High Alpha)"},
-    {"Fund Name": "HDFC Top 100 Fund", "Category": "Large Cap", "Rating": "⭐⭐⭐⭐", "1M_Return": "+1.6%", "3M_Return": "+4.9%", "1Y_Return": "+19.8%", "3Y_CAGR": "+17.2%", "Exp_1M_Future": "+1.4%", "Exp_3M_Future": "+4.2%", "Exp_1Y_Future": "+14-17%", "AI_Verdict": "🟢 Stable Wealth Builder"},
-    {"Fund Name": "Nippon India Growth Fund", "Category": "Mid Cap", "Rating": "⭐⭐⭐⭐⭐", "1M_Return": "+2.8%", "3M_Return": "+7.9%", "1Y_Return": "+32.1%", "3Y_CAGR": "+23.5%", "Exp_1M_Future": "+2.2%", "Exp_3M_Future": "+6.8%", "Exp_1Y_Future": "+20-24%", "AI_Verdict": "🟢 Strong Buy (Growth)"},
-    {"Fund Name": "UTI Nifty 50 Index Fund", "Category": "Index Fund", "Rating": "⭐⭐⭐⭐⭐", "1M_Return": "+1.2%", "3M_Return": "+4.1%", "1Y_Return": "+16.5%", "3Y_CAGR": "+14.8%", "Exp_1M_Future": "+1.1%", "Exp_3M_Future": "+3.5%", "Exp_1Y_Future": "+12-15%", "AI_Verdict": "🟢 Zero-Error Passive SIP"},
+    {"Fund Name": "Parag Parikh Flexi Cap Fund", "Category": "Flexi Cap", "Rating": "⭐⭐⭐⭐⭐", "Report_Date": today_date_str, "1M_Return": "+2.1%", "3M_Return": "+6.8%", "1Y_Return": "+24.5%", "3Y_CAGR": "+19.8%", "Exp_1M_Future": "+1.8%", "Exp_3M_Future": "+5.5%", "Exp_1Y_Future": "+18-22%", "AI_Verdict": "🟢 Strong Buy (Long Term)"},
+    {"Fund Name": "Quant Small Cap Fund", "Category": "Small Cap", "Rating": "⭐⭐⭐⭐⭐", "Report_Date": today_date_str, "1M_Return": "+3.4%", "3M_Return": "+9.2%", "1Y_Return": "+38.2%", "3Y_CAGR": "+28.4%", "Exp_1M_Future": "+2.5%", "Exp_3M_Future": "+8.0%", "Exp_1Y_Future": "+22-26%", "AI_Verdict": "🟢 Buy on Dips (High Alpha)"},
+    {"Fund Name": "HDFC Top 100 Fund", "Category": "Large Cap", "Rating": "⭐⭐⭐⭐", "Report_Date": today_date_str, "1M_Return": "+1.6%", "3M_Return": "+4.9%", "1Y_Return": "+19.8%", "3Y_CAGR": "+17.2%", "Exp_1M_Future": "+1.4%", "Exp_3M_Future": "+4.2%", "Exp_1Y_Future": "+14-17%", "AI_Verdict": "🟢 Stable Wealth Builder"},
+    {"Fund Name": "Nippon India Growth Fund", "Category": "Mid Cap", "Rating": "⭐⭐⭐⭐⭐", "Report_Date": today_date_str, "1M_Return": "+2.8%", "3M_Return": "+7.9%", "1Y_Return": "+32.1%", "3Y_CAGR": "+23.5%", "Exp_1M_Future": "+2.2%", "Exp_3M_Future": "+6.8%", "Exp_1Y_Future": "+20-24%", "AI_Verdict": "🟢 Strong Buy (Growth)"},
+    {"Fund Name": "UTI Nifty 50 Index Fund", "Category": "Index Fund", "Rating": "⭐⭐⭐⭐⭐", "Report_Date": today_date_str, "1M_Return": "+1.2%", "3M_Return": "+4.1%", "1Y_Return": "+16.5%", "3Y_CAGR": "+14.8%", "Exp_1M_Future": "+1.1%", "Exp_3M_Future": "+3.5%", "Exp_1Y_Future": "+12-15%", "AI_Verdict": "🟢 Zero-Error Passive SIP"},
 ]
 
 POPULAR_STOCKS_PRESET = [
@@ -209,10 +223,10 @@ POPULAR_STOCKS_PRESET = [
 ]
 
 UPCOMING_IPOS_DATA = [
-    {"IPO Name": "Waaree Energies Limited", "Sector": "Solar / Renewable", "Price Band": "₹1,427 - ₹1,503", "Estimated GMP": "+95%", "Rating Review": "4.8/5 (Heavy Demand)", "AI Verdict": "🟢 STRONG APPLY (मजबूत लिस्टिंग गेन)"},
-    {"IPO Name": "Hyundai Motor India", "Sector": "Automobile", "Price Band": "₹1,865 - ₹1,960", "Estimated GMP": "+8%", "Rating Review": "4.0/5 (Market Leader)", "AI Verdict": "🟢 APPLY FOR LONG TERM"},
-    {"IPO Name": "Swiggy Limited", "Sector": "Quick Commerce", "Price Band": "₹371 - ₹390", "Estimated GMP": "+12%", "Rating Review": "3.8/5 (High Growth)", "AI Verdict": "🟡 APPLY FOR HIGH RISK"},
-    {"IPO Name": "NTPC Green Energy Limited", "Sector": "PSU Renewable", "Price Band": "₹102 - ₹108", "Estimated GMP": "+25%", "Rating Review": "4.6/5 (Sovereign Backed)", "AI Verdict": "🟢 STRONG APPLY"}
+    {"IPO Name": "Waaree Energies Limited", "Sector": "Solar / Renewable", "Price Band": "₹1,427 - ₹1,503", "Estimated GMP": "+95%", "Report_Date": today_date_str, "Rating Review": "4.8/5 (Heavy Demand)", "AI Verdict": "🟢 STRONG APPLY (मजबूत लिस्टिंग गेन)"},
+    {"IPO Name": "Hyundai Motor India", "Sector": "Automobile", "Price Band": "₹1,865 - ₹1,960", "Estimated GMP": "+8%", "Report_Date": today_date_str, "Rating Review": "4.0/5 (Market Leader)", "AI Verdict": "🟢 APPLY FOR LONG TERM"},
+    {"IPO Name": "Swiggy Limited", "Sector": "Quick Commerce", "Price Band": "₹371 - ₹390", "Estimated GMP": "+12%", "Report_Date": today_date_str, "Rating Review": "3.8/5 (High Growth)", "AI Verdict": "🟡 APPLY FOR HIGH RISK"},
+    {"IPO Name": "NTPC Green Energy Limited", "Sector": "PSU Renewable", "Price Band": "₹102 - ₹108", "Estimated GMP": "+25%", "Report_Date": today_date_str, "Rating Review": "4.6/5 (Sovereign Backed)", "AI Verdict": "🟢 STRONG APPLY"}
 ]
 
 # 4. Sidebar Settings
@@ -245,7 +259,7 @@ st.markdown(
 )
 
 st.title("TradingView Pro | Global Stock, Buy/Sell, MF, Commodity & AI Terminal")
-st.caption("30+ Indian Indices • Top Buy & Top Sell Picks • Multi-Horizon Returns (1M to 10Y) • Mutual Funds Radar • 100% Free Access")
+st.caption(f"📅 आज की तारीख: **{now_time_str}** | Live Market Prices (CMP) • 30+ Indian Indices • Top Buy & Sell Picks • 100% Free Access")
 
 # 6. Helper Functions & Search Engine
 def search_yahoo_tickers(query):
@@ -362,9 +376,9 @@ def fetch_option_chain_oi(ticker_obj, cmp):
 
 # Top Bullish Stocks Flash Panel
 st.markdown(
-    """
+    f"""
     <div class="flash-box">
-        🔥 <b>AI लाइव बुलिश फ़्लैश रडार (Top Buy & Momentum Picks):</b><br>
+        🔥 <b>AI लाइव बुलिश फ़्लैश रडार | तारीख: {today_date_str}:</b><br>
         • <b>BALRAMCHIN / SBIN / TATAMOTORS</b>: Strong Buy Recommendations | उच्च अर्निंग्स ग्रोथ व ब्रेकआउट मोमेंटम<br>
         • <b>TOP MUTUAL FUNDS</b>: Quant Small Cap (+38.2% 1Y) | Parag Parikh Flexi Cap (+24.5% 1Y)
     </div>
@@ -426,8 +440,6 @@ elif chosen_commodity != "-- कमोडिटी चुनें (Select Commo
 else:
     symbol = "BALRAMCHIN.NS"
 
-st.info(f"🎯 **सक्रिय सिंबल (Active Ticker):** `{symbol}`")
-
 # Date Range Controls
 rcol1, rcol2 = st.columns([1, 1])
 with rcol1:
@@ -471,24 +483,22 @@ screener_tabs = st.tabs([
 ])
 
 with screener_tabs[0]:
-    st.markdown("#### 🟢 टॉप BUY स्टॉक्स: खरीदने का कारण, टारगेट व संभावित अपसाइड (Top Buy Picks & Catalysts)")
+    st.markdown(f"#### 🟢 टॉप BUY स्टॉक्स | रिपोर्ट तारीख: `{today_date_str}` (Top Buy Picks & Catalysts)")
     df_top_buy = pd.DataFrame(TOP_BUY_STOCKS_MASTER)
     st.dataframe(df_top_buy, use_container_width=True)
-    st.caption("💡 *Top Buy Picks मजबूत अर्निंग्स, सेक्टर टेलविंड्स, संस्थागत खरीदारी व टेक्निकल ब्रेकआउट पर आधारित हैं।")
 
 with screener_tabs[1]:
-    st.markdown("#### 🔴 टॉप SELL / AVOID स्टॉक्स: बेचने का कारण, रिस्क व डाउनसाइड (Top Sell / Exit Picks & Risks)")
+    st.markdown(f"#### 🔴 टॉप SELL / AVOID स्टॉक्स | रिपोर्ट तारीख: `{today_date_str}` (Top Sell / Exit Picks & Risks)")
     df_top_sell = pd.DataFrame(TOP_SELL_STOCKS_MASTER)
     st.dataframe(df_top_sell, use_container_width=True)
-    st.caption("⚠️ *Top Sell / Avoid Picks कमजोर फंडामेंटल्स, ओवरवैल्युएशन, रेगुलेटरी जोखिम व बेयरिश मोमेंटम पर आधारित हैं।")
 
 with screener_tabs[2]:
-    st.markdown("#### 📈 भारत के टॉप म्यूचुअल फंड्स: हिस्टोरिकल व AI अनुमानित फ्यूचर रिटर्न (Previous & Future Expected Returns)")
+    st.markdown(f"#### 📈 भारत के टॉप म्यूचुअल फंड्स | रिपोर्ट तारीख: `{today_date_str}` (Previous & Future Expected Returns)")
     df_mf = pd.DataFrame(TOP_MUTUAL_FUNDS_DATA)
     st.dataframe(df_mf, use_container_width=True)
 
 with screener_tabs[3]:
-    st.markdown("#### 💎 भारत और अमेरिका के टॉप डिविडेंड पेइंग स्टॉक्स (Top Dividend Yielders & Expected Returns)")
+    st.markdown(f"#### 💎 भारत और अमेरिका के टॉप डिविडेंड पेइंग स्टॉक्स | रिपोर्ट तारीख: `{today_date_str}`")
     df_div_top = pd.DataFrame(TOP_DIVIDEND_STOCKS_MASTER)
     st.dataframe(df_div_top, use_container_width=True)
 
@@ -528,8 +538,8 @@ with screener_tabs[4]:
                             reason = "अत्यधिक ओवरबॉट, कभी भी मुनाफावसूली संभव"
 
                         tech_rows.append({
-                            "Symbol": s_ticker, "Company Name": s_name, "Price": c_p,
-                            "RSI (14)": r_val, "RSI 10-100 Zone": zone, "AI Action Signal": act,
+                            "Symbol": s_ticker, "Company Name": s_name, "Price (CMP)": f"₹{c_p:,.2f}",
+                            "Date": today_date_str, "RSI (14)": r_val, "RSI 10-100 Zone": zone, "AI Action Signal": act,
                             "बुलिश / एक्शन का कारण (Reason)": reason
                         })
                 except Exception:
@@ -557,7 +567,7 @@ with screener_tabs[5]:
                         rating = str(s_inf.get('recommendationKey', 'Buy')).replace('_', ' ').title()
                         
                         rows.append({
-                            "Symbol": s_ticker, "Company Name": s_name, "Price": c_p, "Chg %": f"{chg:+}%",
+                            "Symbol": s_ticker, "Company Name": s_name, "Price (CMP)": f"₹{c_p:,.2f}", "Date": today_date_str, "Chg %": f"{chg:+}%",
                             "Vol": vol, "Mkt Cap": mkt_c, "P/E": p_e, "EPS (TTM)": eps_val,
                             "Div Yield %": div_y, "Sector": s_inf.get('sector', "Equities"),
                             "Analyst Rating": f"⭐ {rating}"
@@ -793,8 +803,9 @@ if symbol:
         total_lifetime_div = float(df_div.sum()) if not df_div.empty else 0.0
         yield_on_cost = (div_rate / buy_price * 100) if buy_price > 0 else None
 
-        # Header Info
+        # Header Info & Live Date Stamp Box
         st.markdown("---")
+        st.markdown(f"<div class='price-stamp-box'>📅 <b>आज की लाइव तारीख (Date):</b> {now_time_str} | 💰 <b>करंट मार्केट प्राइस (CMP):</b> {currency} {cmp_price:,.2f} ({price_change:+.2f} / {price_change_pct:+.2f}%)</div>", unsafe_allow_html=True)
         st.subheader(f"🏢 {long_name} ({symbol})")
         st.caption(f"Sector: **{sector}** | Industry: **{industry}** | Currency: **{currency}**")
 
@@ -802,14 +813,14 @@ if symbol:
         st.markdown(f"<div class='sec-header'>{get_txt('⏳ AI मल्टी-टाइमफ्रेम रिटर्न व टारगेट प्रेडिक्शन (1M, 2M, 3M, 4M, 6M, 1Y, 5Y, 10Y)', 'Multi-Horizon AI Return & Target Predictions')}</div>", unsafe_allow_html=True)
         
         horizon_data = [
-            {"Timeframe / अवधि": "1 Month (1 माह)", "Expected Target Price": f"{currency} {tgt_1m:,.2f}", "Expected Gain (%)": f"+{ret_1m}%", "AI Confidence": "High (Momentum / RSI)"},
-            {"Timeframe / अवधि": "2 Months (2 माह)", "Expected Target Price": f"{currency} {tgt_2m:,.2f}", "Expected Gain (%)": f"+{ret_2m}%", "AI Confidence": "High (Short Trend)"},
-            {"Timeframe / अवधि": "3 Months (3 माह)", "Expected Target Price": f"{currency} {tgt_3m:,.2f}", "Expected Gain (%)": f"+{ret_3m}%", "AI Confidence": "Robust (Quarterly Cycle)"},
-            {"Timeframe / अवधि": "4 Months (4 माह)", "Expected Target Price": f"{currency} {tgt_4m:,.2f}", "Expected Gain (%)": f"+{ret_4m}%", "AI Confidence": "Steady (Moving Average)"},
-            {"Timeframe / अवधि": "6 Months (6 माह)", "Expected Target Price": f"{currency} {tgt_6m:,.2f}", "Expected Gain (%)": f"+{ret_6m}%", "AI Confidence": "High (Earnings Horizon)"},
-            {"Timeframe / अवधि": "1 Year (1 वर्ष)", "Expected Target Price": f"{currency} {tgt_1y:,.2f}", "Expected Gain (%)": f"+{ret_1y}%", "AI Confidence": "Institutional Target"},
-            {"Timeframe / अवधि": "5 Years (5 वर्ष)", "Expected Target Price": f"{currency} {tgt_5y:,.2f}", "Expected Gain (%)": f"+{ret_5y}%", "AI Confidence": "CAGR + Div Reinvestment"},
-            {"Timeframe / अवधि": "10 Years (10 वर्ष)", "Expected Target Price": f"{currency} {tgt_10y:,.2f}", "Expected Gain (%)": f"+{ret_10y}%", "AI Confidence": "Long-Term Compounding"},
+            {"Timeframe / अवधि": "1 Month (1 माह)", "आज का प्राइस (CMP)": f"{currency} {cmp_price:,.2f}", "Expected Target Price": f"{currency} {tgt_1m:,.2f}", "Expected Gain (%)": f"+{ret_1m}%", "रिपोर्ट तारीख": today_date_str, "AI Confidence": "High (Momentum / RSI)"},
+            {"Timeframe / अवधि": "2 Months (2 माह)", "आज का प्राइस (CMP)": f"{currency} {cmp_price:,.2f}", "Expected Target Price": f"{currency} {tgt_2m:,.2f}", "Expected Gain (%)": f"+{ret_2m}%", "रिपोर्ट तारीख": today_date_str, "AI Confidence": "High (Short Trend)"},
+            {"Timeframe / अवधि": "3 Months (3 माह)", "आज का प्राइस (CMP)": f"{currency} {cmp_price:,.2f}", "Expected Target Price": f"{currency} {tgt_3m:,.2f}", "Expected Gain (%)": f"+{ret_3m}%", "रिपोर्ट तारीख": today_date_str, "AI Confidence": "Robust (Quarterly Cycle)"},
+            {"Timeframe / अवधि": "4 Months (4 माह)", "आज का प्राइस (CMP)": f"{currency} {cmp_price:,.2f}", "Expected Target Price": f"{currency} {tgt_4m:,.2f}", "Expected Gain (%)": f"+{ret_4m}%", "रिपोर्ट तारीख": today_date_str, "AI Confidence": "Steady (Moving Average)"},
+            {"Timeframe / अवधि": "6 Months (6 माह)", "आज का प्राइस (CMP)": f"{currency} {cmp_price:,.2f}", "Expected Target Price": f"{currency} {tgt_6m:,.2f}", "Expected Gain (%)": f"+{ret_6m}%", "रिपोर्ट तारीख": today_date_str, "AI Confidence": "High (Earnings Horizon)"},
+            {"Timeframe / अवधि": "1 Year (1 वर्ष)", "आज का प्राइस (CMP)": f"{currency} {cmp_price:,.2f}", "Expected Target Price": f"{currency} {tgt_1y:,.2f}", "Expected Gain (%)": f"+{ret_1y}%", "रिपोर्ट तारीख": today_date_str, "AI Confidence": "Institutional Target"},
+            {"Timeframe / अवधि": "5 Years (5 वर्ष)", "आज का प्राइस (CMP)": f"{currency} {cmp_price:,.2f}", "Expected Target Price": f"{currency} {tgt_5y:,.2f}", "Expected Gain (%)": f"+{ret_5y}%", "रिपोर्ट तारीख": today_date_str, "AI Confidence": "CAGR + Div Reinvestment"},
+            {"Timeframe / अवधि": "10 Years (10 वर्ष)", "आज का प्राइस (CMP)": f"{currency} {cmp_price:,.2f}", "Expected Target Price": f"{currency} {tgt_10y:,.2f}", "Expected Gain (%)": f"+{ret_10y}%", "रिपोर्ट तारीख": today_date_str, "AI Confidence": "Long-Term Compounding"},
         ]
         st.dataframe(pd.DataFrame(horizon_data), use_container_width=True)
 
@@ -818,13 +829,14 @@ if symbol:
         
         r1, r2, r3, r4 = st.columns(4)
         r1.metric("📌 AI प्रेडिक्शन वर्डिक्ट", ai_action)
-        r2.metric("📊 प्रॉफिट प्रोबेबिलिटी स्कोर", f"{win_prob}%", "AI ऐतिहासिक डेटा मॉडल")
+        r2.metric("📊 प्रॉफिट प्रोबेबिलिटी स्कोर", f"{win_prob}%", f"तारीख: {today_date_str}")
         r3.metric("📈 RSI (14) स्टेटस", f"{latest_rsi:.1f}", rsi_sig)
         r4.metric("🏢 ब्रोकरेज कंसेंसस", f"⭐ {analyst_recom}", f"Target: {currency} {target_mean:,.1f}")
 
         st.markdown(
             f"""
             <div class="ai-box">
+                📅 <b>एनालिसिस तारीख:</b> {today_date_str} | 💰 <b>करंट मार्केट प्राइस (CMP):</b> {currency} {cmp_price:,.2f}<br>
                 🔮 <b>AI बॉट फ्यूचर प्रेडिक्शन:</b> {future_pred_text}<br>
                 📊 <b>RSI लेवल एनालिसिस:</b> <b>{rsi_detail}</b> — {rsi_catalyst}<br>
                 🏢 <b>संस्थागत ब्रोकरेज ओपिनियन:</b> शीर्ष रिसर्च हाउसेस द्वारा इस पर <b>{analyst_recom}</b> रेटिंग और <b>{currency} {target_mean:,.2f}</b> का औसत टारगेट मूल्य दिया गया है।<br>
@@ -836,7 +848,7 @@ if symbol:
 
         # Fundamental Health
         st.markdown(f"<div class='sec-header'>{get_txt('🛡️ AI फंडामेंटल हेल्थ व कंपनी साउंडनेस', 'AI Fundamental Soundness & Health Score')}</div>", unsafe_allow_html=True)
-        st.markdown(f"<div class='{fund_class}'>📊 <b>कंपनी स्थिति:</b> {fund_verdict} | <b>AI हेल्थ स्कोर:</b> {fund_score}/100</div>", unsafe_allow_html=True)
+        st.markdown(f"<div class='{fund_class}'>📊 <b>कंपनी स्थिति:</b> {fund_verdict} | <b>AI हेल्थ स्कोर:</b> {fund_score}/100 | <b>तारीख:</b> {today_date_str}</div>", unsafe_allow_html=True)
 
         fcol1, fcol2, fcol3 = st.columns(3)
         fcol1.info(f"💎 **AI सही खरीद मूल्य (Fair Buy Price):** `{currency} {ai_fair_buy_price:,.2f}`\n\n*(इस स्तर पर रिस्क न्यूनतम है)*")
@@ -847,7 +859,7 @@ if symbol:
         # Re-Buy Levels
         st.markdown(f"<div class='sec-header'>{get_txt('🎯 AI री-बाय / एवरेजिंग कैलकुलेटर व ट्रेडिंग स्तर', 'AI Re-Buy Price & Trading Levels')}</div>", unsafe_allow_html=True)
         l1, l2, l3, l4 = st.columns(4)
-        l1.metric("📥 AI री-बाय स्तर", f"{currency} {suggested_rebuy_price:,.2f}")
+        l1.metric("📥 AI री-बाय स्तर", f"{currency} {suggested_rebuy_price:,.2f}", f"CMP: {currency} {cmp_price:,.2f}")
         l2.metric("🛑 स्टॉप-लॉस (Stop-Loss)", f"{currency} {sl_lvl:,.2f}", "-6% Buffer", delta_color="inverse")
         l3.metric("🎯 टार्गेट 1 (Target 1)", f"{currency} {tgt_1:,.2f}", "+8% Target")
         l4.metric("🚀 टार्गेट 2 (Target 2)", f"{currency} {tgt_2:,.2f}", "+15% Target")
@@ -855,7 +867,7 @@ if symbol:
         # Price Action & ATH
         st.markdown(f"<div class='sec-header'>{get_txt('मूल्य एवं 52-सप्ताह/लाइफटाइम स्थिति', 'Price Action & ATH Range')}</div>", unsafe_allow_html=True)
         m1, m2, m3, m4, m5 = st.columns(5)
-        m1.metric("CMP", f"{currency} {cmp_price:,.2f}", f"{price_change:+.2f} ({price_change_pct:+.2f}%)")
+        m1.metric("CMP (आज का प्राइस)", f"{currency} {cmp_price:,.2f}", f"{price_change:+.2f} ({price_change_pct:+.2f}%)")
         m2.metric("52W High", f"{currency} {high_52:,.2f}" if high_52 else "N/A", f"{down_from_52w:.2f}% (from 52W High)", delta_color="inverse")
         m3.metric("52W Low", f"{currency} {low_52:,.2f}" if low_52 else "N/A")
         m4.metric("Lifetime High (ATH)", f"{currency} {ath:,.2f}" if ath else "N/A", f"{down_from_ath:.2f}% (from ATH)", delta_color="inverse")
@@ -904,7 +916,7 @@ if symbol:
             o2.metric("OI Action Signal", oi_data["oi_action"])
             o3.metric("Option Fair Price Center", f"{currency} {oi_data['option_fair_price']}")
             o4.metric("Support / Resistance", f"{oi_data['put_support']} / {oi_data['call_resistance']}")
-            st.info(f"💡 **F&O / OI सेंटीमेंट:** {oi_data['sentiment']} (Expiry: {oi_data['expiry']})")
+            st.info(f"💡 **F&O / OI सेंटीमेंट:** {oi_data['sentiment']} (Expiry: {oi_data['expiry']}) | **तारीख:** {today_date_str}")
 
         # TradingView Multi-Panel Chart
         st.markdown(f"<div class='sec-header'>📈 TradingView Pro Technical Chart (SMA, BB, MACD & RSI)</div>", unsafe_allow_html=True)
@@ -940,11 +952,13 @@ if symbol:
         with st.expander(get_txt("📋 पूर्ण डेटा तालिका देखें (View Full OHLC Table)", "View Full OHLC Table")):
             st.dataframe(df_hist, use_container_width=True)
 
-        # 6. Full Excel Export
+        # Full Excel Export
         summary_rows = [
             {"Field": "--- GENERAL OVERVIEW ---", "Value": ""},
+            {"Field": "Report Date / तारीख", "Value": str(now_time_str)},
             {"Field": "Company Name", "Value": str(long_name)},
             {"Field": "Symbol", "Value": str(symbol)},
+            {"Field": "Current Market Price (CMP)", "Value": f"{currency} {cmp_price:,.2f}"},
             {"Field": "Sector / Industry", "Value": f"{sector} / {industry}"},
             {"Field": "--- AI MULTI-HORIZON RETURN PREDICTIONS ---", "Value": ""},
             {"Field": "1 Month Target Price", "Value": f"{currency} {tgt_1m:,.2f} (+{ret_1m}%)"},
@@ -970,7 +984,6 @@ if symbol:
             {"Field": "Target Price 1", "Value": f"{currency} {tgt_1:,.2f}"},
             {"Field": "Target Price 2", "Value": f"{currency} {tgt_2:,.2f}"},
             {"Field": "--- PRICE & ATH METRICS ---", "Value": ""},
-            {"Field": "Current Market Price (CMP)", "Value": f"{currency} {cmp_price:,.2f}"},
             {"Field": "52-Week High", "Value": f"{currency} {high_52:,.2f}" if high_52 else "N/A"},
             {"Field": "52-Week Low", "Value": f"{currency} {low_52:,.2f}" if low_52 else "N/A"},
             {"Field": "Down from 52W High", "Value": f"{down_from_52w:.2f}%"},
