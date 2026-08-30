@@ -56,7 +56,66 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# 3. Master Database of Stocks & Thematic Baskets
+# 3. Master Database of Indices & Global Stocks
+ALL_INDIAN_INDICES = {
+    "-- इंडेक्स चुनें (Select Indian Index) --": "",
+    "NIFTY 50": "^NSEI",
+    "SENSEX (BSE 30)": "^BSESN",
+    "NIFTY BANK": "^NSEBANK",
+    "NIFTY FINANCIAL SERVICES (FINNIFTY)": "NIFTY_FIN_SERVICE.NS",
+    "NIFTY NEXT 50": "^NSMIDCP",
+    "NIFTY MIDCAP 50": "NIFTY_MIDCAP_50.NS",
+    "NIFTY MIDCAP 100": "NIFTY_MIDCAP_100.NS",
+    "NIFTY MIDCAP SELECT": "NIFTY_MID_SELECT.NS",
+    "NIFTY SMALLCAP 100": "NIFTY_SMALLCAP_100.NS",
+    "NIFTY SMALLCAP 250": "NIFTY_SMALLCAP_250.NS",
+    "NIFTY 200": "^CNX200",
+    "NIFTY 500": "^CRSLDX",
+    "NIFTY IT": "^CNXIT",
+    "NIFTY AUTO": "^CNXAUTO",
+    "NIFTY PHARMA": "^CNXPHARMA",
+    "NIFTY PSU BANK": "^CNXPSUBANK",
+    "NIFTY PRIVATE BANK": "NIFTY_PVT_BANK.NS",
+    "NIFTY METAL": "^CNXMETAL",
+    "NIFTY FMCG": "^CNXFMCG",
+    "NIFTY REALTY": "^CNXREALTY",
+    "NIFTY ENERGY": "^CNXENERGY",
+    "NIFTY INFRASTRUCTURE": "^CNXINFRA",
+    "NIFTY OIL & GAS": "NIFTY_OIL_AND_GAS.NS",
+    "NIFTY HEALTHCARE": "NIFTY_HEALTHCARE.NS",
+    "NIFTY CONSUMER DURABLES": "NIFTY_CONSR_DURBL.NS",
+    "NIFTY MEDIA": "^CNXMEDIA",
+    "INDIA VIX (Volatility Index)": "^INDIAVIX",
+}
+
+ALL_US_MARKET_STOCKS = {
+    "-- US स्टॉक / इंडेक्स चुनें (Select US Stock) --": "",
+    "S&P 500 Index": "^GSPC",
+    "NASDAQ 100 Index": "^NDX",
+    "Dow Jones Industrial Average": "^DJI",
+    "Apple Inc.": "AAPL",
+    "Microsoft Corp": "MSFT",
+    "NVIDIA Corporation": "NVDA",
+    "Alphabet Google": "GOOGL",
+    "Amazon.com Inc": "AMZN",
+    "Meta Platforms (Facebook)": "META",
+    "Tesla Inc": "TSLA",
+    "Broadcom Inc": "AVGO",
+    "Taiwan Semiconductor (TSMC)": "TSM",
+    "AMD (Advanced Micro Devices)": "AMD",
+    "Qualcomm Inc": "QCOM",
+    "Intel Corporation": "INTC",
+    "ASML Holding": "ASML",
+    "Micron Technology": "MU",
+    "Palantir Technologies": "PLTR",
+    "Berkshire Hathaway": "BRK-B",
+    "JPMorgan Chase & Co": "JPM",
+    "Eli Lilly and Company": "LLY",
+    "NextEra Energy": "NEE",
+    "First Solar": "FSLR",
+    "Lockheed Martin": "LMT",
+}
+
 ALL_SECTORS_AND_INDICES = {
     "🔥 All Stocks (सभी प्रमुख भारतीय व अमेरिकी स्टॉक्स)": [
         ("Bank of India", "BANKINDIA.NS"), ("Bank of Baroda", "BANKBARODA.NS"), ("Canara Bank", "CANBK.NS"),
@@ -188,35 +247,55 @@ st.markdown(
 )
 
 st.title("TradingView Pro | Global Stock & Fundamental AI Terminal")
-st.caption("Semiconductor, EV, Railways, Defence, PSU Banks, NIFTY 50/500 & US Equities • TradingView Screener • Option Chain • AI Re-Buy Engine")
+st.caption("All Indian Indices (30+) • US Equities • Sector Baskets • Universal Stock Search • Option Chain • AI Re-Buy Engine")
 
-# 7. Sector & Universal Search
-st.markdown(f"<div class='sec-header'>{get_txt('🔎 सेक्टर बास्केट व यूनिवर्सल सर्च', 'Sector Baskets & Universal Stock Search')}</div>", unsafe_allow_html=True)
+# 7. SEARCH & DEDICATED INDEX / US MARKET BAR
+st.markdown(f"<div class='sec-header'>{get_txt('🔎 ऑल इंडियन इंडेक्स, US मार्केट व यूनिवर्सल स्टॉक सर्च', 'Indian Indices, US Equities & Universal Stock Search')}</div>", unsafe_allow_html=True)
 
-col_sec, col_search = st.columns([1, 2])
-with col_sec:
-    selected_sector = st.selectbox(
-        get_txt("📂 सेक्टर / इंडेक्स चुनें:", "Select Sector / Index:"),
-        list(ALL_SECTORS_AND_INDICES.keys()), index=0
+idx_col, us_col, search_col = st.columns([1, 1, 1.2])
+
+with idx_col:
+    chosen_indian_index = st.selectbox(
+        get_txt("🏛️ भारतीय इंडेक्स (Indian Indices):", "🏛️ Indian Indices:"),
+        options=list(ALL_INDIAN_INDICES.keys()),
+        index=0,
+        help="भारत का कोई भी इंडेक्स (NIFTY 50, Bank Nifty, Midcap, Smallcap, IT, Auto आदि) चुनें।"
     )
 
-sector_stocks = ALL_SECTORS_AND_INDICES[selected_sector]
+with us_col:
+    chosen_us_stock = st.selectbox(
+        get_txt("🇺🇸 US मार्केट (US Equities & Indices):", "🇺🇸 US Market:"),
+        options=list(ALL_US_MARKET_STOCKS.keys()),
+        index=0,
+        help="S&P 500, NASDAQ, Apple, Tesla, NVDA, Google या अन्य US स्टॉक चुनें।"
+    )
+
+sector_stocks = ALL_SECTORS_AND_INDICES["🔥 All Stocks (सभी प्रमुख भारतीय व अमेरिकी स्टॉक्स)"]
 sector_stock_map = {f"{name} [{ticker}]": ticker for name, ticker in sector_stocks}
-sector_stock_options = list(sector_stock_map.keys()) + ["➕ Type Any Custom Symbol (अन्य कोई भी सिंबल लिखें)"]
+sector_stock_options = ["-- डायरेक्ट सर्च / सिंबल लिखें --"] + list(sector_stock_map.keys()) + ["➕ Type Custom Symbol (अन्य कोई भी सिंबल लिखें)"]
 
-with col_search:
+with search_col:
     selected_stock_display = st.selectbox(
-        get_txt("🔎 स्टॉक चुनें या नाम टाइप करें (Type to Search Any Stock):", "Select or Type Stock Name:"),
-        options=sector_stock_options, index=0,
-        help="Bank of India, Bank of Baroda, Canara Bank, Tata, Nvidia या कोई भी स्टॉक सर्च करें।"
+        get_txt("🔎 स्टॉक सर्च (Type Any Stock Name):", "🔎 Universal Search:"),
+        options=sector_stock_options,
+        index=0,
+        help="Bank of India, Bank of Baroda, Canara Bank, Tata या कोई भी स्टॉक यहाँ सर्च करें।"
     )
 
-if selected_stock_display == "➕ Type Any Custom Symbol (अन्य कोई भी सिंबल लिखें)":
+# Determine final symbol cleanly
+if chosen_indian_index != "-- इंडेक्स चुनें (Select Indian Index) --":
+    symbol = ALL_INDIAN_INDICES[chosen_indian_index]
+elif chosen_us_stock != "-- US स्टॉक / इंडेक्स चुनें (Select US Stock) --":
+    symbol = ALL_US_MARKET_STOCKS[chosen_us_stock]
+elif selected_stock_display == "➕ Type Custom Symbol (अन्य कोई भी सिंबल लिखें)":
     custom_in = st.text_input(get_txt("सिंबल लिखें (उदा. BANKINDIA.NS, CANBK.NS, NVDA):", "Enter Symbol:"), value="BANKINDIA.NS").strip().upper()
     symbol = f"{custom_in}.NS" if ("." not in custom_in and not custom_in.startswith("^") and len(custom_in) > 3 and custom_in.isalpha()) else custom_in
-else:
+elif selected_stock_display != "-- डायरेक्ट सर्च / सिंबल लिखें --":
     symbol = sector_stock_map[selected_stock_display]
+else:
+    symbol = "BANKINDIA.NS"
 
+# Date Range Controls
 rcol1, rcol2 = st.columns([1, 1])
 with rcol1:
     range_type = st.radio(
@@ -344,7 +423,7 @@ screener_tabs = st.tabs(["Overview", "Technicals", "Valuation", "Dividends & Mar
 
 with screener_tabs[0]:
     if st.button("⚡ रन ओवरव्यू स्क्रीनर स्कैन (Run Overview Scan)", key="run_overview_scan"):
-        with st.spinner(f"Scanning stocks in {selected_sector}..."):
+        with st.spinner("Scanning top stocks..."):
             rows = []
             for s_name, s_ticker in sector_stocks[:20]:
                 try:
@@ -365,7 +444,7 @@ with screener_tabs[0]:
                         rows.append({
                             "Symbol": s_ticker, "Company Name": s_name, "Price": c_p, "Chg %": f"{chg:+}%",
                             "Vol": vol, "Mkt Cap": mkt_c, "P/E": p_e, "EPS (TTM)": eps_val,
-                            "Div Yield %": div_y, "Sector": s_inf.get('sector', selected_sector),
+                            "Div Yield %": div_y, "Sector": s_inf.get('sector', "Equities"),
                             "Analyst Rating": f"⭐ {rating}"
                         })
                 except Exception:
@@ -529,8 +608,8 @@ if symbol:
         div_yield = (stock_info.get("dividendYield") or 0.0) * 100
         currency = stock_info.get("currency", "INR")
         long_name = stock_info.get("longName", symbol)
-        sector = stock_info.get("sector", selected_sector)
-        industry = stock_info.get("industry", "Equity Market")
+        sector = stock_info.get("sector", "Equity Market / Index")
+        industry = stock_info.get("industry", "Global Equities")
 
         fund_score, fund_verdict, fund_class, fund_factors = evaluate_fundamental_health(stock_info)
 
@@ -594,7 +673,6 @@ if symbol:
         total_lifetime_div = float(df_div.sum()) if not df_div.empty else 0.0
         yield_on_cost = (div_rate / buy_price * 100) if buy_price > 0 else None
 
-        # Stock Header
         st.markdown("---")
         st.subheader(f"🏢 {long_name} ({symbol})")
         st.caption(f"Sector: **{sector}** | Industry: **{industry}** | Currency: **{currency}**")
@@ -757,7 +835,6 @@ if symbol:
             t2.metric("MACD Status", f"{latest_macd:.2f}", macd_sig)
             t3.metric("Overall Trend", trend_sig)
 
-        # Excel Summary Rows
         summary_rows = [
             {"Field": "--- GENERAL OVERVIEW ---", "Value": ""},
             {"Field": "Company Name", "Value": str(long_name)},
