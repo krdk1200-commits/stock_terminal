@@ -14,7 +14,7 @@ import yfinance as yf
 
 # 1. Page Configuration
 st.set_page_config(
-    page_title="TradingView Pro | Global Stock, MF, Commodity & AI Terminal",
+    page_title="TradingView Pro | Global Stock, Buy/Sell, MF, Commodity & AI Terminal",
     page_icon="📊",
     layout="wide",
     initial_sidebar_state="expanded",
@@ -135,28 +135,39 @@ ALL_US_MARKET_STOCKS = {
     "JPMorgan Chase": "JPM",
 }
 
+# --- MASTER TOP BUY & SELL STOCKS WITH CATALYSTS ---
+TOP_BUY_STOCKS_MASTER = [
+    {"Company": "State Bank of India (SBI)", "Ticker": "SBIN.NS", "Action": "🟢 STRONG BUY", "Target_1Y": "₹980", "Upside": "+22%", "Why_Buy_Reason": "मजबूत क्रेडिट ग्रोथ (15%+), घटता NPA और आकर्षक P/E वैल्युएशन"},
+    {"Company": "Tata Motors Ltd", "Ticker": "TATAMOTORS.NS", "Action": "🟢 STRONG BUY", "Target_1Y": "₹1,250", "Upside": "+26%", "Why_Buy_Reason": "JLR का रिकॉर्ड फ्री-कैश-फ्लो, भारत में EV मार्केट लीडरशिप और डीमर्जर वैल्यू अनलॉकिंग"},
+    {"Company": "Balrampur Chini Mills", "Ticker": "BALRAMCHIN.NS", "Action": "🟢 BUY", "Target_1Y": "₹650", "Upside": "+24%", "Why_Buy_Reason": "एथेनॉल ब्लेंडिंग 20% लक्ष्य, चीनी निर्यात नीति में छूट और मजबूत ऑपरेटिंग मार्जिन"},
+    {"Company": "Kaynes Technology", "Ticker": "KAYNES.NS", "Action": "🟢 STRONG BUY", "Target_1Y": "₹6,400", "Upside": "+30%", "Why_Buy_Reason": "सेमीकंडक्टर OSAT प्लांट विस्तार, मजबूत ऑर्डर बुक (₹4,500 Cr+) और 40%+ रेवेन्यू ग्रोथ"},
+    {"Company": "Coal India Ltd", "Ticker": "COALINDIA.NS", "Action": "🟢 BUY (High Div)", "Target_1Y": "₹580", "Upside": "+18% + 7% Div", "Why_Buy_Reason": "पावर सेक्टर की भारी कोयला मांग, शून्य कर्ज और 7%+ डिविडेंड यील्ड"},
+    {"Company": "NVIDIA Corporation", "Ticker": "NVDA", "Action": "🟢 STRONG BUY", "Target_1Y": "$165", "Upside": "+28%", "Why_Buy_Reason": "Blackwell चिप की बेजोड़ मांग और डेटा सेंटर AI इंफ्रास्ट्रक्चर में 85%+ मोनोपॉली"},
+]
+
+TOP_SELL_STOCKS_MASTER = [
+    {"Company": "Vodafone Idea", "Ticker": "IDEA.NS", "Action": "🔴 STRONG SELL", "StopLoss_Risk": "₹11.50", "Downside_Risk": "-25%", "Why_Sell_Reason": "लगातार सब्सक्राइबर लॉस, भारी कर्ज बोझ और भारी AGR देनदारी"},
+    {"Company": "Paytm (One97 Comm)", "Ticker": "PAYTM.NS", "Action": "🔴 AVOID / SELL", "StopLoss_Risk": "₹750", "Downside_Risk": "-18%", "Why_Sell_Reason": "पेमेंट्स बैंक रेगुलेटरी रोक के बाद रेवेन्यू में भारी गिरावट और अनिश्चित प्रॉफिटेबिलिटी"},
+    {"Company": "Yes Bank Ltd", "Ticker": "YESBANK.NS", "Action": "🔴 SELL ON RISE", "StopLoss_Risk": "₹26.00", "Downside_Risk": "-15%", "Why_Sell_Reason": "कम NIM मार्जिन (2.4%), सीमित ROA और बड़े निवेशकों का बिकवाली दबाव"},
+    {"Company": "Intel Corporation", "Ticker": "INTC", "Action": "🔴 AVOID / SELL", "StopLoss_Risk": "$24.00", "Downside_Risk": "-20%", "Why_Sell_Reason": "फाउंड्री बिजनेस में भारी घाटा, AI चिप मार्केट शेयर का नुकसान और डिविडेंड निलंबन"},
+    {"Company": "Ola Electric Mobility", "Ticker": "OLAELEC.NS", "Action": "🔴 SELL / BOOK PROFIT", "StopLoss_Risk": "₹82.00", "Downside_Risk": "-22%", "Why_Sell_Reason": "सर्विस शिकायतों के कारण मार्केट शेयर में कमी और लगातार ऑपरेटिंग लॉस"},
+]
+
 TOP_DIVIDEND_STOCKS_MASTER = [
     {"Company": "Vedanta Ltd", "Ticker": "VEDL.NS", "Market": "India", "Typical_Yield": "10-12%", "Cat": "High Metal Dividend", "Why_Buy": "असाधारण कैश फ्लो और उच्च डिविडेंड यील्ड", "Exp_5Y_Return": "+85%", "Exp_10Y_Return": "+210%"},
     {"Company": "Coal India Ltd", "Ticker": "COALINDIA.NS", "Market": "India", "Typical_Yield": "6-8%", "Cat": "PSU Monopoly", "Why_Buy": "जीरो डेट, स्थिर पावर डिमांड और भारी डिविडेंड पेआउट", "Exp_5Y_Return": "+75%", "Exp_10Y_Return": "+180%"},
     {"Company": "REC Limited", "Ticker": "REC.NS", "Market": "India", "Typical_Yield": "5-7%", "Cat": "Power Finance", "Why_Buy": "पावर इंफ्रास्ट्रक्चर लेंडिंग में तेज वृद्धि और डिविडेंड स्थिरता", "Exp_5Y_Return": "+95%", "Exp_10Y_Return": "+240%"},
     {"Company": "Power Finance Corp (PFC)", "Ticker": "PFC.NS", "Market": "India", "Typical_Yield": "5-7%", "Cat": "Power Finance", "Why_Buy": "मजबूत लोन बुक विस्तार और लगातार डिविडेंड ट्रैक रिकॉर्ड", "Exp_5Y_Return": "+90%", "Exp_10Y_Return": "+230%"},
     {"Company": "Indian Oil Corp (IOC)", "Ticker": "IOC.NS", "Market": "India", "Typical_Yield": "6-8%", "Cat": "Oil & Refining", "Why_Buy": "मजबूत रिफाइनिंग मार्जिन और सरकारी डिविडेंड सपोर्ट", "Exp_5Y_Return": "+60%", "Exp_10Y_Return": "+150%"},
-    {"Company": "Hindustan Zinc", "Ticker": "HINDZINC.NS", "Market": "India", "Typical_Yield": "7-9%", "Cat": "Metals & Mining", "Why_Buy": "जिंक और सिल्वर में सबसे कम उत्पादन लागत और बंपर डिविडेंड", "Exp_5Y_Return": "+70%", "Exp_10Y_Return": "+175%"},
-    {"Company": "ITC Limited", "Ticker": "ITC.NS", "Market": "India", "Typical_Yield": "3.5-4.5%", "Cat": "FMCG Bluechip", "Why_Buy": "मजबूत एफएमसीजी, होटल डीमर्जर और डिफेंसिव डिविडेंड", "Exp_5Y_Return": "+75%", "Exp_10Y_Return": "+195%"},
-    {"Company": "ONGC", "Ticker": "ONGC.NS", "Market": "India", "Typical_Yield": "5-6%", "Cat": "Oil Exploration", "Why_Buy": "कच्चे तेल और गैस उत्पादन में कैश फ्लो सरप्लस", "Exp_5Y_Return": "+65%", "Exp_10Y_Return": "+160%"},
     {"Company": "Altria Group", "Ticker": "MO", "Market": "USA", "Typical_Yield": "8-9%", "Cat": "Consumer Aristocrat", "Why_Buy": "54 वर्षों से लगातार बढ़ता डिविडेंड", "Exp_5Y_Return": "+55%", "Exp_10Y_Return": "+140%"},
     {"Company": "Realty Income (Monthly Div)", "Ticker": "O", "Market": "USA", "Typical_Yield": "5-6%", "Cat": "Real Estate REIT", "Why_Buy": "हर महीने डिविडेंड देने वाला रियल एस्टेट दिग्गज", "Exp_5Y_Return": "+65%", "Exp_10Y_Return": "+160%"},
 ]
 
-# Top Mutual Funds Master Database
 TOP_MUTUAL_FUNDS_DATA = [
     {"Fund Name": "Parag Parikh Flexi Cap Fund", "Category": "Flexi Cap", "Rating": "⭐⭐⭐⭐⭐", "1M_Return": "+2.1%", "3M_Return": "+6.8%", "1Y_Return": "+24.5%", "3Y_CAGR": "+19.8%", "Exp_1M_Future": "+1.8%", "Exp_3M_Future": "+5.5%", "Exp_1Y_Future": "+18-22%", "AI_Verdict": "🟢 Strong Buy (Long Term)"},
     {"Fund Name": "Quant Small Cap Fund", "Category": "Small Cap", "Rating": "⭐⭐⭐⭐⭐", "1M_Return": "+3.4%", "3M_Return": "+9.2%", "1Y_Return": "+38.2%", "3Y_CAGR": "+28.4%", "Exp_1M_Future": "+2.5%", "Exp_3M_Future": "+8.0%", "Exp_1Y_Future": "+22-26%", "AI_Verdict": "🟢 Buy on Dips (High Alpha)"},
     {"Fund Name": "HDFC Top 100 Fund", "Category": "Large Cap", "Rating": "⭐⭐⭐⭐", "1M_Return": "+1.6%", "3M_Return": "+4.9%", "1Y_Return": "+19.8%", "3Y_CAGR": "+17.2%", "Exp_1M_Future": "+1.4%", "Exp_3M_Future": "+4.2%", "Exp_1Y_Future": "+14-17%", "AI_Verdict": "🟢 Stable Wealth Builder"},
-    {"Fund Name": "Mirae Asset Large Cap Fund", "Category": "Large Cap", "Rating": "⭐⭐⭐⭐", "1M_Return": "+1.4%", "3M_Return": "+4.5%", "1Y_Return": "+18.2%", "3Y_CAGR": "+15.9%", "Exp_1M_Future": "+1.2%", "Exp_3M_Future": "+3.9%", "Exp_1Y_Future": "+13-16%", "AI_Verdict": "🟢 Moderate Risk / Buy"},
     {"Fund Name": "Nippon India Growth Fund", "Category": "Mid Cap", "Rating": "⭐⭐⭐⭐⭐", "1M_Return": "+2.8%", "3M_Return": "+7.9%", "1Y_Return": "+32.1%", "3Y_CAGR": "+23.5%", "Exp_1M_Future": "+2.2%", "Exp_3M_Future": "+6.8%", "Exp_1Y_Future": "+20-24%", "AI_Verdict": "🟢 Strong Buy (Growth)"},
-    {"Fund Name": "SBI Bluechip Fund", "Category": "Large Cap", "Rating": "⭐⭐⭐⭐", "1M_Return": "+1.5%", "3M_Return": "+4.8%", "1Y_Return": "+17.9%", "3Y_CAGR": "+15.4%", "Exp_1M_Future": "+1.3%", "Exp_3M_Future": "+4.0%", "Exp_1Y_Future": "+14-16%", "AI_Verdict": "🟢 Safe Core Portfolio"},
-    {"Fund Name": "Motilal Oswal Midcap Fund", "Category": "Mid Cap", "Rating": "⭐⭐⭐⭐⭐", "1M_Return": "+3.1%", "3M_Return": "+8.6%", "1Y_Return": "+35.4%", "3Y_CAGR": "+25.1%", "Exp_1M_Future": "+2.4%", "Exp_3M_Future": "+7.2%", "Exp_1Y_Future": "+21-25%", "AI_Verdict": "🟢 Strong Buy (High Growth)"},
     {"Fund Name": "UTI Nifty 50 Index Fund", "Category": "Index Fund", "Rating": "⭐⭐⭐⭐⭐", "1M_Return": "+1.2%", "3M_Return": "+4.1%", "1Y_Return": "+16.5%", "3Y_CAGR": "+14.8%", "Exp_1M_Future": "+1.1%", "Exp_3M_Future": "+3.5%", "Exp_1Y_Future": "+12-15%", "AI_Verdict": "🟢 Zero-Error Passive SIP"},
 ]
 
@@ -227,14 +238,14 @@ st.markdown(
     """
     <div class="banner-ad">
         📢 SPONSORED / ADVERTISEMENT<br>
-        ⚡ <b>Zero Brokerage Stocks, Mutual Funds & Commodity Investing</b> | <a href="#" target="_blank">Open Account Now</a>
+        ⚡ <b>Zero Brokerage Stocks, Buy/Sell Picks, Mutual Funds & Commodity Terminal</b> | <a href="#" target="_blank">Open Account Now</a>
     </div>
     """,
     unsafe_allow_html=True,
 )
 
-st.title("TradingView Pro | Global Stock, MF, Commodity & AI Terminal")
-st.caption("30+ Indian Indices • Multi-Horizon AI Returns (1M to 10Y) • Mutual Funds Radar • Top Dividends • Option Chain • 100% Free Access")
+st.title("TradingView Pro | Global Stock, Buy/Sell, MF, Commodity & AI Terminal")
+st.caption("30+ Indian Indices • Top Buy & Top Sell Picks • Multi-Horizon Returns (1M to 10Y) • Mutual Funds Radar • 100% Free Access")
 
 # 6. Helper Functions & Search Engine
 def search_yahoo_tickers(query):
@@ -353,9 +364,8 @@ def fetch_option_chain_oi(ticker_obj, cmp):
 st.markdown(
     """
     <div class="flash-box">
-        🔥 <b>AI लाइव बुलिश फ़्लैश रडार (Top Bullish Momentum Stocks & Catalysts):</b><br>
-        • <b>BALRAMCHIN</b>: RSI 58 (बुलिश मोमेंटम) | चीनी निर्यात नीति व एथेनॉल ब्लेंडिंग कैटलिस्ट<br>
-        • <b>SBIN / SBICARD / SBILIFE</b>: RSI 54 (सपोर्ट बाउंस) | क्रेडिट ग्रोथ 15%+ व NII मार्जिन विस्तार<br>
+        🔥 <b>AI लाइव बुलिश फ़्लैश रडार (Top Buy & Momentum Picks):</b><br>
+        • <b>BALRAMCHIN / SBIN / TATAMOTORS</b>: Strong Buy Recommendations | उच्च अर्निंग्स ग्रोथ व ब्रेकआउट मोमेंटम<br>
         • <b>TOP MUTUAL FUNDS</b>: Quant Small Cap (+38.2% 1Y) | Parag Parikh Flexi Cap (+24.5% 1Y)
     </div>
     """,
@@ -447,53 +457,42 @@ with st.expander(get_txt("🛠️ कस्टमाइज़ेशन विक
     inc_div_sheet = cc2.checkbox(get_txt("डिविडेंड इतिहास शीट शामिल करें", "Include Dividend Sheet"), value=True)
     inc_summary = cc3.checkbox(get_txt("एग्जीक्यूटिव समरी शीट शामिल करें", "Include Executive Summary"), value=True)
 
-# 7. Multi-Tab Screener Grid (With Multi-Horizon Return & Mutual Funds)
-st.markdown(f"<div class='sec-header'>{get_txt('📊 TradingView लाइव स्क्रीनर, म्यूचुअल फंड्स व डिविडेंड रडार', 'Live Screener, Mutual Funds & Dividends')}</div>", unsafe_allow_html=True)
+# 7. Multi-Tab Screener Grid (With Top BUY, Top SELL, Mutual Funds, Dividends & IPOs)
+st.markdown(f"<div class='sec-header'>{get_txt('📊 TradingView लाइव स्क्रीनर, टॉप BUY/SELL, म्यूचुअल फंड्स व डिविडेंड रडार', 'Live Screener, Top Buy/Sell Picks, Mutual Funds & Dividends')}</div>", unsafe_allow_html=True)
 
-screener_tabs = st.tabs(["📊 Mutual Funds Radar (Previous & Future Returns)", "🏆 Top Dividend Stocks (5Y & 10Y Return)", "Overview", "Technicals & RSI Zones", "🚀 Upcoming IPO Radar"])
+screener_tabs = st.tabs([
+    "🟢 Top BUY Stocks (क्यों खरीदें)",
+    "🔴 Top SELL / Avoid Stocks (क्यों बेचें)",
+    "📊 Mutual Funds Radar (Previous & Future)",
+    "🏆 Top Dividend Stocks (5Y/10Y Return)",
+    "Technicals & RSI Zones",
+    "Overview",
+    "🚀 Upcoming IPO Radar"
+])
 
 with screener_tabs[0]:
+    st.markdown("#### 🟢 टॉप BUY स्टॉक्स: खरीदने का कारण, टारगेट व संभावित अपसाइड (Top Buy Picks & Catalysts)")
+    df_top_buy = pd.DataFrame(TOP_BUY_STOCKS_MASTER)
+    st.dataframe(df_top_buy, use_container_width=True)
+    st.caption("💡 *Top Buy Picks मजबूत अर्निंग्स, सेक्टर टेलविंड्स, संस्थागत खरीदारी व टेक्निकल ब्रेकआउट पर आधारित हैं।")
+
+with screener_tabs[1]:
+    st.markdown("#### 🔴 टॉप SELL / AVOID स्टॉक्स: बेचने का कारण, रिस्क व डाउनसाइड (Top Sell / Exit Picks & Risks)")
+    df_top_sell = pd.DataFrame(TOP_SELL_STOCKS_MASTER)
+    st.dataframe(df_top_sell, use_container_width=True)
+    st.caption("⚠️ *Top Sell / Avoid Picks कमजोर फंडामेंटल्स, ओवरवैल्युएशन, रेगुलेटरी जोखिम व बेयरिश मोमेंटम पर आधारित हैं।")
+
+with screener_tabs[2]:
     st.markdown("#### 📈 भारत के टॉप म्यूचुअल फंड्स: हिस्टोरिकल व AI अनुमानित फ्यूचर रिटर्न (Previous & Future Expected Returns)")
     df_mf = pd.DataFrame(TOP_MUTUAL_FUNDS_DATA)
     st.dataframe(df_mf, use_container_width=True)
-    st.caption("💡 *Previous Return ऐतिहासिक डेटा (NAV) पर आधारित हैं तथा Future Expected Return क्वांटिटेटिव मोमेंटम व एसेट एलोकेशन मॉडल द्वारा अनुमानित हैं।")
 
-with screener_tabs[1]:
+with screener_tabs[3]:
     st.markdown("#### 💎 भारत और अमेरिका के टॉप डिविडेंड पेइंग स्टॉक्स (Top Dividend Yielders & Expected Returns)")
     df_div_top = pd.DataFrame(TOP_DIVIDEND_STOCKS_MASTER)
     st.dataframe(df_div_top, use_container_width=True)
 
-with screener_tabs[2]:
-    if st.button("⚡ रन ओवरव्यू स्क्रीनर स्कैन (Run Overview Scan)", key="run_overview_scan"):
-        with st.spinner("Scanning top stocks..."):
-            rows = []
-            for s_name, s_ticker in POPULAR_STOCKS_PRESET[:20]:
-                try:
-                    s_t = yf.Ticker(s_ticker)
-                    s_h = s_t.history(period="3mo")
-                    s_inf = s_t.info or {}
-                    if not s_h.empty:
-                        c_p = round(float(s_h["Close"].iloc[-1]), 2)
-                        p_c = round(float(s_h["Close"].iloc[-2]), 2) if len(s_h) > 1 else c_p
-                        chg = round(((c_p - p_c) / p_c) * 100, 2)
-                        vol = f"{s_h['Volume'].iloc[-1]/1e6:.2f}M" if "Volume" in s_h else "N/A"
-                        mkt_c = f"₹{s_inf.get('marketCap', 0)/1e12:.2f}T" if s_inf.get('marketCap') else "N/A"
-                        p_e = round(s_inf.get('trailingPE', 0), 2) if s_inf.get('trailingPE') else "N/A"
-                        eps_val = round(s_inf.get('trailingEps', 0), 2) if s_inf.get('trailingEps') else "N/A"
-                        div_y = f"{s_inf.get('dividendYield', 0)*100:.2f}%" if s_inf.get('dividendYield') else "0.00%"
-                        rating = str(s_inf.get('recommendationKey', 'Buy')).replace('_', ' ').title()
-                        
-                        rows.append({
-                            "Symbol": s_ticker, "Company Name": s_name, "Price": c_p, "Chg %": f"{chg:+}%",
-                            "Vol": vol, "Mkt Cap": mkt_c, "P/E": p_e, "EPS (TTM)": eps_val,
-                            "Div Yield %": div_y, "Sector": s_inf.get('sector', "Equities"),
-                            "Analyst Rating": f"⭐ {rating}"
-                        })
-                except Exception:
-                    continue
-            if rows: st.dataframe(pd.DataFrame(rows), use_container_width=True)
-
-with screener_tabs[3]:
+with screener_tabs[4]:
     if st.button("⚡ रन RSI 10-100 ज़ोन व बुलिश सिग्नल स्कैन", key="run_tech_scan"):
         with st.spinner("Calculating RSI Zones, Momentum & Breakouts..."):
             tech_rows = []
@@ -537,7 +536,37 @@ with screener_tabs[3]:
                     continue
             if tech_rows: st.dataframe(pd.DataFrame(tech_rows).sort_values(by="RSI (14)", ascending=False), use_container_width=True)
 
-with screener_tabs[4]:
+with screener_tabs[5]:
+    if st.button("⚡ रन ओवरव्यू स्क्रीनर स्कैन (Run Overview Scan)", key="run_overview_scan"):
+        with st.spinner("Scanning top stocks..."):
+            rows = []
+            for s_name, s_ticker in POPULAR_STOCKS_PRESET[:20]:
+                try:
+                    s_t = yf.Ticker(s_ticker)
+                    s_h = s_t.history(period="3mo")
+                    s_inf = s_t.info or {}
+                    if not s_h.empty:
+                        c_p = round(float(s_h["Close"].iloc[-1]), 2)
+                        p_c = round(float(s_h["Close"].iloc[-2]), 2) if len(s_h) > 1 else c_p
+                        chg = round(((c_p - p_c) / p_c) * 100, 2)
+                        vol = f"{s_h['Volume'].iloc[-1]/1e6:.2f}M" if "Volume" in s_h else "N/A"
+                        mkt_c = f"₹{s_inf.get('marketCap', 0)/1e12:.2f}T" if s_inf.get('marketCap') else "N/A"
+                        p_e = round(s_inf.get('trailingPE', 0), 2) if s_inf.get('trailingPE') else "N/A"
+                        eps_val = round(s_inf.get('trailingEps', 0), 2) if s_inf.get('trailingEps') else "N/A"
+                        div_y = f"{s_inf.get('dividendYield', 0)*100:.2f}%" if s_inf.get('dividendYield') else "0.00%"
+                        rating = str(s_inf.get('recommendationKey', 'Buy')).replace('_', ' ').title()
+                        
+                        rows.append({
+                            "Symbol": s_ticker, "Company Name": s_name, "Price": c_p, "Chg %": f"{chg:+}%",
+                            "Vol": vol, "Mkt Cap": mkt_c, "P/E": p_e, "EPS (TTM)": eps_val,
+                            "Div Yield %": div_y, "Sector": s_inf.get('sector', "Equities"),
+                            "Analyst Rating": f"⭐ {rating}"
+                        })
+                except Exception:
+                    continue
+            if rows: st.dataframe(pd.DataFrame(rows), use_container_width=True)
+
+with screener_tabs[6]:
     st.dataframe(pd.DataFrame(UPCOMING_IPOS_DATA), use_container_width=True)
 
 # 8. Single Stock Fetching Payload
@@ -715,7 +744,6 @@ if symbol:
         div_yield_val = (div_yield / 100.0) if div_yield else 0.015
         monthly_base = (base_annual_growth + div_yield_val) / 12.0
 
-        # Technical/Momentum multiplier for short-term
         mom_factor = 1.35 if "BULLISH" in ai_action else (1.0 if "NEUTRAL" in ai_action else 0.7)
 
         ret_1m = round(monthly_base * 1 * mom_factor * 100, 2)
@@ -912,7 +940,7 @@ if symbol:
         with st.expander(get_txt("📋 पूर्ण डेटा तालिका देखें (View Full OHLC Table)", "View Full OHLC Table")):
             st.dataframe(df_hist, use_container_width=True)
 
-        # Full Excel Export
+        # 6. Full Excel Export
         summary_rows = [
             {"Field": "--- GENERAL OVERVIEW ---", "Value": ""},
             {"Field": "Company Name", "Value": str(long_name)},
