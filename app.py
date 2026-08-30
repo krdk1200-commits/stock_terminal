@@ -57,7 +57,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# 3. Comprehensive Master Database (Indian Indices, US Market, Commodities & Equities)
+# 3. Comprehensive Master Database
 ALL_INDIAN_INDICES = {
     "-- इंडेक्स चुनें (Select Indian Index) --": "",
     "NIFTY 50": "^NSEI",
@@ -124,88 +124,44 @@ ALL_US_MARKET_STOCKS = {
     "JPMorgan Chase": "JPM",
 }
 
-ALL_SECTORS_AND_INDICES = {
-    "🔥 All Stocks (सभी प्रमुख भारतीय व अमेरिकी स्टॉक्स)": [
-        ("Bank of India", "BANKINDIA.NS"), ("Bank of Baroda", "BANKBARODA.NS"), ("Canara Bank", "CANBK.NS"),
-        ("State Bank of India (SBI)", "SBIN.NS"), ("Punjab National Bank (PNB)", "PNB.NS"),
-        ("Union Bank of India", "UNIONBANK.NS"), ("Indian Bank", "INDIANB.NS"), ("Central Bank of India", "CENTRALBK.NS"),
-        ("Reliance Industries (RIL)", "RELIANCE.NS"), ("Tata Consultancy Services (TCS)", "TCS.NS"),
-        ("Tata Motors Ltd", "TATAMOTORS.NS"), ("Tata Steel Ltd", "TATASTEEL.NS"), ("Tata Power Co Ltd", "TATAPOWER.NS"),
-        ("Tata Technologies", "TATATECH.NS"), ("Tata Elxsi Ltd", "TATAELXSI.NS"), ("HDFC Bank Ltd", "HDFCBANK.NS"),
-        ("ICICI Bank Ltd", "ICICIBANK.NS"), ("Infosys Ltd", "INFY.NS"), ("Bharti Airtel", "BHARTIARTL.NS"),
-        ("ITC Ltd", "ITC.NS"), ("Larsen & Toubro (L&T)", "LT.NS"), ("Zomato Ltd", "ZOMATO.NS"),
-        ("Jio Financial Services", "JIOFIN.NS"), ("Apple Inc (US)", "AAPL"), ("Microsoft Corp (US)", "MSFT"),
-        ("NVIDIA Corp (US)", "NVDA"), ("Tesla Inc (US)", "TSLA")
-    ],
-    "⚡ Semiconductor & Electronics (सेमीकंडक्टर व चिप्स)": [
-        ("Kaynes Technology India", "KAYNES.NS"), ("CG Power & Industrial", "CGPOWER.NS"),
-        ("Tata Elxsi (Chip Design/AI)", "TATAELXSI.NS"), ("Dixon Technologies", "DIXON.NS"),
-        ("ASM Technologies Ltd", "ASMTEC.BO"), ("SPEL Semiconductor Ltd", "SPEL.BO"),
-        ("NVIDIA Corp (US)", "NVDA"), ("Taiwan Semiconductor (TSMC - US)", "TSM"),
-        ("Broadcom Inc (US)", "AVGO"), ("AMD (US)", "AMD"), ("Qualcomm (US)", "QCOM"),
-        ("Intel Corporation (US)", "INTC"), ("ASML Holding (US)", "ASML"), ("Micron Technology (US)", "MU")
-    ],
-    "🚆 Railways, Defence & Aerospace (रेलवे एवं रक्षा क्षेत्र)": [
-        ("HAL (Hindustan Aeronautics)", "HAL.NS"), ("Bharat Electronics (BEL)", "BEL.NS"),
-        ("Mazagon Dock Shipbuilders", "MAZDOCK.NS"), ("Cochin Shipyard Ltd", "COCHINSHIP.NS"),
-        ("Bharat Dynamics (BDL)", "BDL.NS"), ("Solar Industries India", "SOLARINDS.NS"),
-        ("Data Patterns India", "DATAPATTNS.NS"), ("Paras Defence & Space", "PARAS.NS"),
-        ("IRFC (Railway Finance)", "IRFC.NS"), ("RVNL (Rail Vikas Nigam)", "RVNL.NS"),
-        ("IRCTC (Rail Catering)", "IRCTC.NS"), ("Titagarh Rail Systems", "TITAGARH.NS"),
-        ("Jupiter Wagons Ltd", "JWL.NS"), ("RailTel Corporation", "RAILTEL.NS"),
-        ("IRCON International", "IRCON.NS"), ("RITES Ltd", "RITES.NS")
-    ],
-    "🚗 EV, Automobile & Battery Tech (इलेक्ट्रिक वाहन व ऑटो)": [
-        ("Tata Motors Ltd (EV Leader)", "TATAMOTORS.NS"), ("Mahindra & Mahindra (M&M)", "M&M.NS"),
-        ("Maruti Suzuki India", "MARUTI.NS"), ("Bajaj Auto Ltd", "BAJAJ-AUTO.NS"),
-        ("TVS Motor Company", "TVSMOTOR.NS"), ("Eicher Motors", "EICHERMOT.NS"),
-        ("Hero MotoCorp", "HEROMOTOCO.NS"), ("Ola Electric Mobility", "OLAELEC.NS"),
-        ("Olectra Greentech (EV Bus)", "OLECTRA.NS"), ("JBM Auto Ltd", "JBMA.NS"),
-        ("Exide Industries (EV Battery)", "EXIDEIND.NS"), ("Amara Raja Energy", "ARE&M.NS"),
-        ("Sona BLW Precision", "SONACOMS.NS"), ("Tesla Inc (US)", "TSLA"), ("Rivian Automotive (US)", "RIVN")
-    ],
-    "🌱 Green & Renewable Energy (सोलर, पवन व हरित ऊर्जा)": [
-        ("Tata Power Company", "TATAPOWER.NS"), ("Suzlon Energy Ltd", "SUZLON.NS"),
-        ("IREDA (Renewable Agency)", "IREDA.NS"), ("Adani Green Energy", "ADANIGREEN.NS"),
-        ("Inox Wind Ltd", "INOXWIND.NS"), ("KPI Green Energy Ltd", "KPIGREEN.NS"),
-        ("Waaree Energies Ltd", "WAAREE.NS"), ("Premier Energies Ltd", "PREMIERENE.NS"),
-        ("NTPC Ltd / NTPC Green", "NTPC.NS"), ("Power Grid Corp", "POWERGRID.NS"),
-        ("NHPC Ltd", "NHPC.NS"), ("SJVN Ltd", "SJVN.NS"), ("NextEra Energy (US)", "NEE"),
-        ("First Solar Inc (US)", "FSLR")
-    ],
-    "🏦 PSU Banks & Govt Financials (सरकारी बैंक व वित्तीय संस्थान)": [
-        ("Bank of India", "BANKINDIA.NS"), ("Bank of Baroda", "BANKBARODA.NS"),
-        ("Canara Bank", "CANBK.NS"), ("State Bank of India (SBI)", "SBIN.NS"),
-        ("Punjab National Bank (PNB)", "PNB.NS"), ("Union Bank of India", "UNIONBANK.NS"),
-        ("Indian Bank", "INDIANB.NS"), ("Central Bank of India", "CENTRALBK.NS"),
-        ("UCO Bank", "UCOBANK.NS"), ("Indian Overseas Bank", "IOB.NS"),
-        ("Bank of Maharashtra", "MAHABANK.NS"), ("Punjab & Sind Bank", "PSB.NS"),
-        ("IREDA", "IREDA.NS"), ("IRFC", "IRFC.NS"), ("PFC Limited", "PFC.NS"), ("REC Limited", "REC.NS")
-    ],
-    "🏢 NIFTY 50, NIFTY 200 & NIFTY 500": [
-        ("Reliance Industries", "RELIANCE.NS"), ("TCS", "TCS.NS"), ("HDFC Bank", "HDFCBANK.NS"),
-        ("ICICI Bank", "ICICIBANK.NS"), ("Infosys", "INFY.NS"), ("SBI", "SBIN.NS"),
-        ("Bharti Airtel", "BHARTIARTL.NS"), ("ITC Ltd", "ITC.NS"), ("L&T", "LT.NS"),
-        ("Sun Pharma", "SUNPHARMA.NS"), ("Titan Company", "TITAN.NS"), ("Bajaj Finance", "BAJFINANCE.NS"),
-        ("UltraTech Cement", "ULTRACEMCO.NS"), ("Zomato Ltd", "ZOMATO.NS"), ("Jio Financial", "JIOFIN.NS")
-    ],
-    "💻 IT, Cloud & Artificial Intelligence (आईटी व AI)": [
-        ("TCS", "TCS.NS"), ("Infosys", "INFY.NS"), ("HCL Tech", "HCLTECH.NS"),
-        ("Wipro Ltd", "WIPRO.NS"), ("LTIMindtree", "LTIM.NS"), ("Tech Mahindra", "TECHM.NS"),
-        ("Persistent Systems", "PERSISTENT.NS"), ("Coforge Ltd", "COFORGE.NS"),
-        ("Tata Elxsi", "TATAELXSI.NS"), ("KPIT Tech", "KPITTECH.NS"), ("Microsoft Corp (US)", "MSFT"),
-        ("Alphabet Google (US)", "GOOGL"), ("Amazon AWS (US)", "AMZN"), ("Meta Platforms (US)", "META"),
-        ("Palantir Technologies (US)", "PLTR")
-    ],
-    "🇺🇸 US Mega Caps & Global Equities": [
-        ("Apple Inc (US)", "AAPL"), ("Microsoft Corp (US)", "MSFT"), ("NVIDIA Corp (US)", "NVDA"),
-        ("Alphabet Google (US)", "GOOGL"), ("Amazon.com (US)", "AMZN"), ("Meta Platforms (US)", "META"),
-        ("Tesla Inc (US)", "TSLA"), ("Broadcom Inc (US)", "AVGO"), ("Palantir Tech (US)", "PLTR"),
-        ("JPMorgan Chase (US)", "JPM"), ("Berkshire Hathaway (US)", "BRK-B")
-    ]
-}
+POPULAR_STOCKS_PRESET = [
+    ("Balrampur Chini Mills", "BALRAMCHIN.NS"),
+    ("State Bank of India (SBI Bank)", "SBIN.NS"),
+    ("SBI Cards & Payment Services", "SBICARD.NS"),
+    ("SBI Life Insurance", "SBILIFE.NS"),
+    ("Bank of India", "BANKINDIA.NS"),
+    ("Bank of Baroda", "BANKBARODA.NS"),
+    ("Canara Bank", "CANBK.NS"),
+    ("Punjab National Bank (PNB)", "PNB.NS"),
+    ("Union Bank of India", "UNIONBANK.NS"),
+    ("Indian Bank", "INDIANB.NS"),
+    ("Reliance Industries (RIL)", "RELIANCE.NS"),
+    ("Tata Consultancy Services (TCS)", "TCS.NS"),
+    ("Tata Motors Ltd", "TATAMOTORS.NS"),
+    ("Tata Steel Ltd", "TATASTEEL.NS"),
+    ("Tata Power Co Ltd", "TATAPOWER.NS"),
+    ("Tata Technologies", "TATATECH.NS"),
+    ("Tata Elxsi Ltd", "TATAELXSI.NS"),
+    ("HDFC Bank Ltd", "HDFCBANK.NS"),
+    ("ICICI Bank Ltd", "ICICIBANK.NS"),
+    ("Infosys Ltd", "INFY.NS"),
+    ("Bharti Airtel", "BHARTIARTL.NS"),
+    ("ITC Ltd", "ITC.NS"),
+    ("Larsen & Toubro (L&T)", "LT.NS"),
+    ("Zomato Ltd", "ZOMATO.NS"),
+    ("Jio Financial Services", "JIOFIN.NS"),
+    ("Hindustan Aeronautics (HAL)", "HAL.NS"),
+    ("Bharat Electronics (BEL)", "BEL.NS"),
+    ("Mazagon Dock Shipbuilders", "MAZDOCK.NS"),
+    ("IRFC (Railway Finance)", "IRFC.NS"),
+    ("RVNL (Rail Vikas Nigam)", "RVNL.NS"),
+    ("Suzlon Energy", "SUZLON.NS"),
+    ("IREDA", "IREDA.NS"),
+    ("Kaynes Technology", "KAYNES.NS"),
+    ("Dixon Technologies", "DIXON.NS"),
+]
 
-# 4. Upcoming & Active IPO Radar
+# 4. Upcoming IPO Radar
 UPCOMING_IPOS_DATA = [
     {"IPO Name": "Waaree Energies Limited", "Sector": "Solar / Renewable", "Price Band": "₹1,427 - ₹1,503", "Estimated GMP": "+95%", "Rating Review": "4.8/5 (Heavy Demand)", "AI Verdict": "🟢 STRONG APPLY (मजबूत लिस्टिंग गेन)"},
     {"IPO Name": "Hyundai Motor India", "Sector": "Automobile", "Price Band": "₹1,865 - ₹1,960", "Estimated GMP": "+8%", "Rating Review": "4.0/5 (Market Leader)", "AI Verdict": "🟢 APPLY FOR LONG TERM"},
@@ -243,18 +199,18 @@ st.markdown(
 )
 
 st.title("TradingView Pro | Global Stock, Commodity & Fundamental AI Terminal")
-st.caption("30+ Indian Indices • US Markets • Commodities (Gold, Silver, Oil) • F&O/OI Engine • AI Future Predictions • 100% Free Access")
+st.caption("30+ Indian Indices • Nifty 500 / SmallCap / MidCap • US Equities • Commodities • Option Chain • 100% Free Access")
 
-# 7. SEARCH BAR (INDICES, US STOCKS, COMMODITIES & UNIVERSAL SEARCH)
+# 7. SEARCH BAR (UNIVERSAL AUTO-FETCH FOR ALL NSE/BSE & US STOCKS)
 st.markdown(f"<div class='sec-header'>{get_txt('🔎 ऑल इंडियन इंडेक्स, US मार्केट, कमोडिटी व यूनिवर्सल स्टॉक सर्च', 'Indices, Commodities, US Equities & Universal Search')}</div>", unsafe_allow_html=True)
 
-idx_col, us_col, com_col, search_col = st.columns([1, 1, 1, 1.2])
+idx_col, us_col, com_col = st.columns([1, 1, 1])
 
 with idx_col:
     chosen_indian_index = st.selectbox(
         get_txt("🏛️ भारतीय इंडेक्स:", "🏛️ Indian Indices:"),
         options=list(ALL_INDIAN_INDICES.keys()), index=0,
-        help="NIFTY 50, Bank Nifty, Midcap, Smallcap, IT, Auto आदि चुनें।"
+        help="NIFTY 50, NIFTY 500, Bank Nifty, Midcap, Smallcap आदि चुनें।"
     )
 
 with us_col:
@@ -271,31 +227,44 @@ with com_col:
         help="Gold, Silver, Crude Oil, Natural Gas, Copper आदि चुनें।"
     )
 
-sector_stocks = ALL_SECTORS_AND_INDICES["🔥 All Stocks (सभी प्रमुख भारतीय व अमेरिकी स्टॉक्स)"]
-sector_stock_map = {f"{name} [{ticker}]": ticker for name, ticker in sector_stocks}
-sector_stock_options = ["-- डायरेक्ट सर्च / सिंबल लिखें --"] + list(sector_stock_map.keys()) + ["➕ Type Custom Symbol (अन्य कोई भी सिंबल लिखें)"]
-
-with search_col:
-    selected_stock_display = st.selectbox(
-        get_txt("🔎 यूनिवर्सल सर्च:", "🔎 Universal Search:"),
-        options=sector_stock_options, index=0,
-        help="Bank of India, Bank of Baroda, Canara Bank, Tata या कोई भी स्टॉक यहाँ सर्च करें।"
-    )
+# Universal Text Search Input
+st.markdown("##### 🔎 भारत (NSE/BSE) या अमेरिका के किसी भी शेयर का नाम या सिंबल टाइप करें:")
+search_input = st.text_input(
+    label="Universal Stock Search",
+    placeholder="जैसे: BALRAMCHIN, SBICARD, SBILIFE, SBIN, TATAMOTORS, RELIANCE, AAPL, NVDA, GC=F",
+    value="",
+    help="यहाँ किसी भी लिस्टेड कंपनी का NSE सिंबल या टिकर दर्ज करें। भारतीय शेयरों के लिए .NS लगाने की आवश्यकता नहीं है, सिस्टम अपने-आप जोड़ लेगा।",
+    label_visibility="collapsed"
+).strip().upper()
 
 # Clean Symbol Resolution
-if chosen_indian_index != "-- इंडेक्स चुनें (Select Indian Index) --":
+if search_input:
+    # Auto-format input
+    if "." not in search_input and not search_input.startswith("^") and "=" not in search_input and len(search_input) >= 2:
+        # Check known ticker mapping
+        ticker_map = {
+            "BALRAMPUR CHINI": "BALRAMCHIN.NS",
+            "BALRAMPUR": "BALRAMCHIN.NS",
+            "BALRAMCHIN": "BALRAMCHIN.NS",
+            "SBI": "SBIN.NS",
+            "SBI CARD": "SBICARD.NS",
+            "SBICARD": "SBICARD.NS",
+            "SBI LIFE": "SBILIFE.NS",
+            "SBILIFE": "SBILIFE.NS",
+        }
+        symbol = ticker_map.get(search_input, f"{search_input}.NS")
+    else:
+        symbol = search_input
+elif chosen_indian_index != "-- इंडेक्स चुनें (Select Indian Index) --":
     symbol = ALL_INDIAN_INDICES[chosen_indian_index]
 elif chosen_us_stock != "-- US स्टॉक / इंडेक्स चुनें (Select US Stock) --":
     symbol = ALL_US_MARKET_STOCKS[chosen_us_stock]
 elif chosen_commodity != "-- कमोडिटी चुनें (Select Commodity) --":
     symbol = ALL_COMMODITIES[chosen_commodity]
-elif selected_stock_display == "➕ Type Custom Symbol (अन्य कोई भी सिंबल लिखें)":
-    custom_in = st.text_input(get_txt("सिंबल लिखें (उदा. BANKINDIA.NS, CANBK.NS, NVDA, GC=F):", "Enter Symbol:"), value="BANKINDIA.NS").strip().upper()
-    symbol = f"{custom_in}.NS" if ("." not in custom_in and not custom_in.startswith("^") and "=" not in custom_in and len(custom_in) > 3 and custom_in.isalpha()) else custom_in
-elif selected_stock_display != "-- डायरेक्ट सर्च / सिंबल लिखें --":
-    symbol = sector_stock_map[selected_stock_display]
 else:
-    symbol = "BANKINDIA.NS"
+    symbol = "BALRAMCHIN.NS"
+
+st.info(f"🎯 **सक्रिय सिंबल (Active Ticker):** `{symbol}`")
 
 # Date Range Controls
 rcol1, rcol2 = st.columns([1, 1])
@@ -427,7 +396,7 @@ with screener_tabs[0]:
     if st.button("⚡ रन ओवरव्यू स्क्रीनर स्कैन (Run Overview Scan)", key="run_overview_scan"):
         with st.spinner("Scanning top stocks..."):
             rows = []
-            for s_name, s_ticker in sector_stocks[:20]:
+            for s_name, s_ticker in POPULAR_STOCKS_PRESET[:20]:
                 try:
                     s_t = yf.Ticker(s_ticker)
                     s_h = s_t.history(period="3mo")
@@ -457,7 +426,7 @@ with screener_tabs[1]:
     if st.button("⚡ रन टेक्निकल इंडिकेटर स्कैन (Run Technicals Scan)", key="run_tech_scan"):
         with st.spinner("Calculating RSI, MACD & Signals..."):
             tech_rows = []
-            for s_name, s_ticker in sector_stocks[:20]:
+            for s_name, s_ticker in POPULAR_STOCKS_PRESET[:20]:
                 try:
                     s_t = yf.Ticker(s_ticker)
                     s_h = s_t.history(period="3mo")
@@ -484,7 +453,7 @@ with screener_tabs[2]:
     if st.button("⚡ रन वैल्युएशन स्कैन (Run Valuation Scan)", key="run_val_scan"):
         with st.spinner("Fetching P/E, P/B & Intrinsic Values..."):
             val_rows = []
-            for s_name, s_ticker in sector_stocks[:20]:
+            for s_name, s_ticker in POPULAR_STOCKS_PRESET[:20]:
                 try:
                     s_t = yf.Ticker(s_ticker)
                     s_inf = s_t.info or {}
@@ -507,7 +476,7 @@ with screener_tabs[3]:
     if st.button("⚡ रन डिविडेंड व मार्जिन स्कैन (Run Margins Scan)", key="run_div_scan"):
         with st.spinner("Fetching Margins and Dividend Yields..."):
             div_rows = []
-            for s_name, s_ticker in sector_stocks[:20]:
+            for s_name, s_ticker in POPULAR_STOCKS_PRESET[:20]:
                 try:
                     s_inf = yf.Ticker(s_ticker).info or {}
                     div_rows.append({
@@ -523,12 +492,20 @@ with screener_tabs[3]:
 with screener_tabs[4]:
     st.dataframe(pd.DataFrame(UPCOMING_IPOS_DATA), use_container_width=True)
 
-# 10. Fetch Single Stock Data Payload
+# 10. Robust Stock Fetching Engine
 def fetch_stock_payload(ticker_symbol, period_val, s_date, e_date):
     try:
         t = yf.Ticker(ticker_symbol)
         h = t.history(period=period_val) if period_val else t.history(start=s_date, end=e_date)
-        if h.empty: h = t.history(period="1y")
+        
+        # Fallback if specific exchange symbol empty
+        if h.empty and not ticker_symbol.endswith(".NS") and not ticker_symbol.startswith("^") and "=" not in ticker_symbol:
+            t = yf.Ticker(f"{ticker_symbol}.NS")
+            h = t.history(period=period_val) if period_val else t.history(start=s_date, end=e_date)
+            
+        if h.empty:
+            h = t.history(period="1y")
+            
         max_h = t.history(period="max")
         info = t.info or {}
         divs = t.dividends if hasattr(t, "dividends") else pd.Series(dtype=float)
@@ -682,7 +659,6 @@ if symbol:
         tgt_1 = round(cmp_price * 1.08, 2)
         tgt_2 = round(cmp_price * 1.15, 2)
 
-        # Institutional Brokerage Consensus Ratings
         analyst_recom = str(stock_info.get("recommendationKey", "BUY")).replace('_', ' ').upper()
         target_mean = stock_info.get("targetMeanPrice", round(cmp_price * 1.14, 2))
 
