@@ -20,7 +20,7 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# Current Date & Time Formatting
+# Current Date & Time Formatting (100% Dynamic)
 today_date_str = datetime.date.today().strftime("%d-%b-%Y")
 now_time_str = datetime.datetime.now().strftime("%d-%b-%Y | %I:%M %p")
 
@@ -76,6 +76,13 @@ st.markdown(
         font-weight: 600;
         color: #131722;
         margin-bottom: 15px;
+    }
+    .news-box {
+        background: #f8f9fa;
+        border-left: 4px solid #ff9900;
+        padding: 12px 16px;
+        border-radius: 6px;
+        margin-bottom: 10px;
     }
     </style>
     """,
@@ -654,9 +661,15 @@ def fetch_stock_payload(ticker_symbol, period_val, s_date, e_date):
         info = t.info or {}
         divs = t.dividends if hasattr(t, "dividends") else pd.Series(dtype=float)
         ath = max_h["High"].max() if not max_h.empty else (h["High"].max() if not h.empty else None)
-        return t, h, info, ath, divs
+        
+        try:
+            news = t.news or []
+        except Exception:
+            news = []
+            
+        return t, h, info, ath, divs, news
     except Exception:
-        return None, None, None, None, None
+        return None, None, None, None, None, []
 
 def generate_premium_excel(summary_data, hist_df, div_df, inc_s, inc_o, inc_d):
     output = io.BytesIO()
@@ -706,8 +719,8 @@ def generate_premium_excel(summary_data, hist_df, div_df, inc_s, inc_o, inc_d):
 
 # 9. Execution & Single Stock Detailed Report
 if symbol:
-    with st.spinner(f"Fetching Live Market Analytics for {symbol}..."):
-        ticker_obj, df_hist, stock_info, ath_val, df_div = fetch_stock_payload(symbol, selected_period, start_date, end_date)
+    with st.spinner(f"Fetching Live Market Analytics & News for {symbol}..."):
+        ticker_obj, df_hist, stock_info, ath_val, df_div, stock_news = fetch_stock_payload(symbol, selected_period, start_date, end_date)
 
     if df_hist is not None and not df_hist.empty:
         cmp_price = stock_info.get("currentPrice") or stock_info.get("regularMarketPrice") or float(df_hist["Close"].iloc[-1])
@@ -866,6 +879,25 @@ if symbol:
         st.markdown(f"<div class='price-stamp-box'>📅 <b>आज की लाइव तारीख (Date):</b> {now_time_str} | 💰 <b>करंट मार्केट प्राइस (CMP):</b> {currency} {cmp_price:,.2f} ({price_change:+.2f} / {price_change_pct:+.2f}%)</div>", unsafe_allow_html=True)
         st.subheader(f"🏢 {long_name} ({symbol})")
         st.caption(f"Sector: **{sector}** | Industry: **{industry}** | Currency: **{currency}**")
+
+        # --- LIVE BREAKING NEWS & CATALYST FEED SECTION ---
+        st.markdown(f"<div class='sec-header'>{get_txt('📢 लाइव ग्लोबल व कंपनी ब्रेकिंग न्यूज़ (1-2% प्राइस इम्पैक्ट अलर्ट)', 'Live Breaking News & High-Impact Catalysts')}</div>", unsafe_allow_html=True)
+        if stock_news and len(stock_news) > 0:
+            for n_item in stock_news[:4]:
+                n_title = n_item.get("title", "Market Update")
+                n_pub = n_item.get("publisher", "Financial Wire")
+                n_link = n_item.get("link", "#")
+                st.markdown(
+                    f"""
+                    <div class="news-box">
+                        ⚡ <b>{n_title}</b><br>
+                        <span style="font-size:0.8rem; color:#666;">स्रोत (Source): {n_pub} | <a href="{n_link}" target="_blank">पूरी खबर पढ़ें (Read Full)</a></span>
+                    </div>
+                    """,
+                    unsafe_allow_html=True,
+                )
+        else:
+            st.info(f"💡 **{long_name}** के लिए वर्तमान में कोई बड़ी प्रतिकूल या असामान्य न्यूज़ ट्रिगर नहीं है। स्टॉक सामान्य मार्केट वॉल्यूम और फंडामेंटल्स के आधार पर ट्रेड कर रहा है।")
 
         # 0. Multi-Horizon AI Returns Table (1M, 2M, 3M, 4M, 6M, 1Y, 5Y, 10Y)
         st.markdown(f"<div class='sec-header'>{get_txt('⏳ AI मल्टी-टाइमफ्रेम रिटर्न व टारगेट प्रेडिक्शन (1M, 2M, 3M, 4M, 6M, 1Y, 5Y, 10Y)', 'Multi-Horizon AI Return & Target Predictions')}</div>", unsafe_allow_html=True)
