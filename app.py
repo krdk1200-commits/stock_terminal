@@ -1,5 +1,6 @@
 import datetime
 import io
+import json
 import numpy as np
 import openpyxl
 from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
@@ -7,6 +8,7 @@ from openpyxl.utils import get_column_letter
 import pandas as pd
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
+import requests
 import streamlit as st
 import yfinance as yf
 
@@ -57,7 +59,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# 3. Comprehensive Master Database
+# 3. Master Database (Indices, Commodities & Global Presets)
 ALL_INDIAN_INDICES = {
     "-- इंडेक्स चुनें (Select Indian Index) --": "",
     "NIFTY 50": "^NSEI",
@@ -199,10 +201,32 @@ st.markdown(
 )
 
 st.title("TradingView Pro | Global Stock, Commodity & Fundamental AI Terminal")
-st.caption("30+ Indian Indices • Nifty 500 / SmallCap / MidCap • US Equities • Commodities • Option Chain • 100% Free Access")
+st.caption("All Indian (NSE/BSE) Stocks • 30+ Indices • US Markets • Commodities • Live Search Dropdown • 100% Free Access")
 
-# 7. SEARCH BAR (UNIVERSAL AUTO-FETCH FOR ALL NSE/BSE & US STOCKS)
-st.markdown(f"<div class='sec-header'>{get_txt('🔎 ऑल इंडियन इंडेक्स, US मार्केट, कमोडिटी व यूनिवर्सल स्टॉक सर्च', 'Indices, Commodities, US Equities & Universal Search')}</div>", unsafe_allow_html=True)
+# 7. DYNAMIC AUTO-SUGGEST & SEARCH ENGINE
+def search_yahoo_tickers(query):
+    if not query or len(query.strip()) < 1:
+        return []
+    try:
+        url = f"https://query2.finance.yahoo.com/v1/finance/search?q={query}&quotesCount=10&newsCount=0"
+        headers = {"User-Agent": "Mozilla/5.0"}
+        resp = requests.get(url, headers=headers, timeout=4)
+        if resp.status_code == 200:
+            data = resp.json()
+            quotes = data.get("quotes", [])
+            results = []
+            for q in quotes:
+                sym = q.get("symbol")
+                name = q.get("shortname") or q.get("longname") or sym
+                exch = q.get("exchDisp") or q.get("exchange", "")
+                if sym:
+                    results.append((f"{name} ({sym}) - [{exch}]", sym))
+            return results
+    except Exception:
+        pass
+    return []
+
+st.markdown(f"<div class='sec-header'>{get_txt('🔎 ऑल इंडियन इंडेक्स, US मार्केट, कमोडिटी व यूनिवर्सल सर्च', 'Indices, Commodities, US Equities & Universal Search')}</div>", unsafe_allow_html=True)
 
 idx_col, us_col, com_col = st.columns([1, 1, 1])
 
@@ -227,34 +251,28 @@ with com_col:
         help="Gold, Silver, Crude Oil, Natural Gas, Copper आदि चुनें।"
     )
 
-# Universal Text Search Input
-st.markdown("##### 🔎 भारत (NSE/BSE) या अमेरिका के किसी भी शेयर का नाम या सिंबल टाइप करें:")
-search_input = st.text_input(
-    label="Universal Stock Search",
-    placeholder="जैसे: BALRAMCHIN, SBICARD, SBILIFE, SBIN, TATAMOTORS, RELIANCE, AAPL, NVDA, GC=F",
+# Universal Dynamic Search
+st.markdown("##### 🔎 कंपनी का नाम या सिंबल लिखें (टाइप करते ही नीचे लाइव सुझाव आएँगे):")
+search_query = st.text_input(
+    label="Search Box",
+    placeholder="जैसे: balrampur, sbi, tata, reliance, zomato, apple, nvda...",
     value="",
-    help="यहाँ किसी भी लिस्टेड कंपनी का NSE सिंबल या टिकर दर्ज करें। भारतीय शेयरों के लिए .NS लगाने की आवश्यकता नहीं है, सिस्टम अपने-आप जोड़ लेगा।",
     label_visibility="collapsed"
-).strip().upper()
+).strip()
 
-# Clean Symbol Resolution
-if search_input:
-    # Auto-format input
-    if "." not in search_input and not search_input.startswith("^") and "=" not in search_input and len(search_input) >= 2:
-        # Check known ticker mapping
-        ticker_map = {
-            "BALRAMPUR CHINI": "BALRAMCHIN.NS",
-            "BALRAMPUR": "BALRAMCHIN.NS",
-            "BALRAMCHIN": "BALRAMCHIN.NS",
-            "SBI": "SBIN.NS",
-            "SBI CARD": "SBICARD.NS",
-            "SBICARD": "SBICARD.NS",
-            "SBI LIFE": "SBILIFE.NS",
-            "SBILIFE": "SBILIFE.NS",
-        }
-        symbol = ticker_map.get(search_input, f"{search_input}.NS")
-    else:
-        symbol = search_input
+live_suggestions = []
+if search_query:
+    live_suggestions = search_yahoo_tickers(search_query)
+
+# Determine Active Symbol Cleanly
+if live_suggestions:
+    options_map = {disp: sym for disp, sym in live_suggestions}
+    selected_option = st.selectbox("🎯 लाइव सुझाव से स्टॉक चुनें (Select from live matches):", list(options_map.keys()), index=0)
+    symbol = options_map[selected_option]
+elif search_query:
+    # Direct fallback resolution
+    cleaned_q = search_query.upper().replace(" ", "")
+    symbol = f"{cleaned_q}.NS" if ("." not in cleaned_q and not cleaned_q.startswith("^") and "=" not in cleaned_q) else cleaned_q
 elif chosen_indian_index != "-- इंडेक्स चुनें (Select Indian Index) --":
     symbol = ALL_INDIAN_INDICES[chosen_indian_index]
 elif chosen_us_stock != "-- US स्टॉक / इंडेक्स चुनें (Select US Stock) --":
@@ -498,7 +516,7 @@ def fetch_stock_payload(ticker_symbol, period_val, s_date, e_date):
         t = yf.Ticker(ticker_symbol)
         h = t.history(period=period_val) if period_val else t.history(start=s_date, end=e_date)
         
-        # Fallback if specific exchange symbol empty
+        # Fallback resolution
         if h.empty and not ticker_symbol.endswith(".NS") and not ticker_symbol.startswith("^") and "=" not in ticker_symbol:
             t = yf.Ticker(f"{ticker_symbol}.NS")
             h = t.history(period=period_val) if period_val else t.history(start=s_date, end=e_date)
@@ -659,6 +677,7 @@ if symbol:
         tgt_1 = round(cmp_price * 1.08, 2)
         tgt_2 = round(cmp_price * 1.15, 2)
 
+        # Institutional Brokerage Consensus Ratings
         analyst_recom = str(stock_info.get("recommendationKey", "BUY")).replace('_', ' ').upper()
         target_mean = stock_info.get("targetMeanPrice", round(cmp_price * 1.14, 2))
 
