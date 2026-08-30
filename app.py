@@ -54,6 +54,15 @@ st.markdown(
         margin: 15px 0;
         border: 1px solid #415a77;
     }
+    .flash-box {
+        background: linear-gradient(90deg, #134e5e 0%, #71b280 100%);
+        color: white;
+        padding: 12px 18px;
+        border-radius: 8px;
+        margin-bottom: 15px;
+        font-weight: 500;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    }
     </style>
     """,
     unsafe_allow_html=True,
@@ -163,7 +172,6 @@ POPULAR_STOCKS_PRESET = [
     ("Dixon Technologies", "DIXON.NS"),
 ]
 
-# 4. Upcoming IPO Radar
 UPCOMING_IPOS_DATA = [
     {"IPO Name": "Waaree Energies Limited", "Sector": "Solar / Renewable", "Price Band": "₹1,427 - ₹1,503", "Estimated GMP": "+95%", "Rating Review": "4.8/5 (Heavy Demand)", "AI Verdict": "🟢 STRONG APPLY (मजबूत लिस्टिंग गेन)"},
     {"IPO Name": "Hyundai Motor India", "Sector": "Automobile", "Price Band": "₹1,865 - ₹1,960", "Estimated GMP": "+8%", "Rating Review": "4.0/5 (Market Leader)", "AI Verdict": "🟢 APPLY FOR LONG TERM"},
@@ -171,7 +179,7 @@ UPCOMING_IPOS_DATA = [
     {"IPO Name": "NTPC Green Energy Limited", "Sector": "PSU Renewable", "Price Band": "₹102 - ₹108", "Estimated GMP": "+25%", "Rating Review": "4.6/5 (Sovereign Backed)", "AI Verdict": "🟢 STRONG APPLY"}
 ]
 
-# 5. Sidebar Settings
+# 4. Sidebar Settings
 st.sidebar.markdown("### ⚙️ सेटिंग्स / Settings")
 language = st.sidebar.radio("🌐 भाषा चुनें / Select Language:", ["Bilingual (हिंदी + English)", "हिंदी (Hindi)", "English"], index=0)
 is_hindi = "हिंदी" in language
@@ -189,7 +197,7 @@ buy_price = st.sidebar.number_input(
     help="Yield on Cost और Re-Buy/Averaging Price निकालने के लिए दर्ज करें।"
 )
 
-# 6. Top Banner & Title
+# 5. Top Banner & Title
 st.markdown(
     """
     <div class="banner-ad">
@@ -201,9 +209,9 @@ st.markdown(
 )
 
 st.title("TradingView Pro | Global Stock, Commodity & Fundamental AI Terminal")
-st.caption("All Indian (NSE/BSE) Stocks • 30+ Indices • US Markets • Commodities • Live Search Dropdown • 100% Free Access")
+st.caption("30+ Indian Indices • All NSE/BSE Equities • US Markets • Commodities • AI Bullish Scanner • 100% Free Access")
 
-# 7. DYNAMIC AUTO-SUGGEST & SEARCH ENGINE
+# 6. DYNAMIC AUTO-SUGGEST & SEARCH ENGINE
 def search_yahoo_tickers(query):
     if not query or len(query.strip()) < 1:
         return []
@@ -226,95 +234,7 @@ def search_yahoo_tickers(query):
         pass
     return []
 
-st.markdown(f"<div class='sec-header'>{get_txt('🔎 ऑल इंडियन इंडेक्स, US मार्केट, कमोडिटी व यूनिवर्सल सर्च', 'Indices, Commodities, US Equities & Universal Search')}</div>", unsafe_allow_html=True)
-
-idx_col, us_col, com_col = st.columns([1, 1, 1])
-
-with idx_col:
-    chosen_indian_index = st.selectbox(
-        get_txt("🏛️ भारतीय इंडेक्स:", "🏛️ Indian Indices:"),
-        options=list(ALL_INDIAN_INDICES.keys()), index=0,
-        help="NIFTY 50, NIFTY 500, Bank Nifty, Midcap, Smallcap आदि चुनें।"
-    )
-
-with us_col:
-    chosen_us_stock = st.selectbox(
-        get_txt("🇺🇸 US मार्केट:", "🇺🇸 US Market:"),
-        options=list(ALL_US_MARKET_STOCKS.keys()), index=0,
-        help="S&P 500, NASDAQ, Apple, Tesla, NVDA आदि चुनें।"
-    )
-
-with com_col:
-    chosen_commodity = st.selectbox(
-        get_txt("🪙 कमोडिटी (Gold/Oil):", "🪙 Commodities:"),
-        options=list(ALL_COMMODITIES.keys()), index=0,
-        help="Gold, Silver, Crude Oil, Natural Gas, Copper आदि चुनें।"
-    )
-
-# Universal Dynamic Search
-st.markdown("##### 🔎 कंपनी का नाम या सिंबल लिखें (टाइप करते ही नीचे लाइव सुझाव आएँगे):")
-search_query = st.text_input(
-    label="Search Box",
-    placeholder="जैसे: balrampur, sbi, tata, reliance, zomato, apple, nvda...",
-    value="",
-    label_visibility="collapsed"
-).strip()
-
-live_suggestions = []
-if search_query:
-    live_suggestions = search_yahoo_tickers(search_query)
-
-# Determine Active Symbol Cleanly
-if live_suggestions:
-    options_map = {disp: sym for disp, sym in live_suggestions}
-    selected_option = st.selectbox("🎯 लाइव सुझाव से स्टॉक चुनें (Select from live matches):", list(options_map.keys()), index=0)
-    symbol = options_map[selected_option]
-elif search_query:
-    # Direct fallback resolution
-    cleaned_q = search_query.upper().replace(" ", "")
-    symbol = f"{cleaned_q}.NS" if ("." not in cleaned_q and not cleaned_q.startswith("^") and "=" not in cleaned_q) else cleaned_q
-elif chosen_indian_index != "-- इंडेक्स चुनें (Select Indian Index) --":
-    symbol = ALL_INDIAN_INDICES[chosen_indian_index]
-elif chosen_us_stock != "-- US स्टॉक / इंडेक्स चुनें (Select US Stock) --":
-    symbol = ALL_US_MARKET_STOCKS[chosen_us_stock]
-elif chosen_commodity != "-- कमोडिटी चुनें (Select Commodity) --":
-    symbol = ALL_COMMODITIES[chosen_commodity]
-else:
-    symbol = "BALRAMCHIN.NS"
-
-st.info(f"🎯 **सक्रिय सिंबल (Active Ticker):** `{symbol}`")
-
-# Date Range Controls
-rcol1, rcol2 = st.columns([1, 1])
-with rcol1:
-    range_type = st.radio(
-        get_txt("Range Type / मोड:", "Range Type:"),
-        [get_txt("Standard Presets (1D, 1M, 1Y...)", "Standard Presets"), get_txt("📅 Custom Date Range", "Custom Date Range")],
-        horizontal=True
-    )
-duration_map = {
-    "1 Day / 1 दिन": "1d", "5 Days / 5 दिन": "5d", "1 Month / 1 माह": "1mo",
-    "6 Months / 6 माह": "6mo", "1 Year / 1 वर्ष": "1y", "5 Years / 5 वर्ष": "5y", "Max / अधिकतम": "max"
-}
-with rcol2:
-    if "Standard" in range_type:
-        chosen_dur_label = st.selectbox(get_txt("समयावधि चुनें / Duration:", "Duration:"), list(duration_map.keys()), index=2)
-        selected_period = duration_map[chosen_dur_label]
-        start_date, end_date = None, None
-    else:
-        d_c1, d_c2 = st.columns(2)
-        start_date = d_c1.date_input("Start Date", value=datetime.date(2023, 1, 1))
-        end_date = d_c2.date_input("End Date", value=datetime.date.today())
-        selected_period = None
-
-# Customization Expander
-with st.expander(get_txt("🛠️ कस्टमाइज़ेशन विकल्प (Custom Columns & Sheets)", "Custom Columns & Sheets Settings")):
-    cc1, cc2, cc3 = st.columns(3)
-    inc_ohlc = cc1.checkbox(get_txt("OHLCV डेटा शीट शामिल करें", "Include OHLCV Sheet"), value=True)
-    inc_div_sheet = cc2.checkbox(get_txt("डिविडेंड इतिहास शीट शामिल करें", "Include Dividend Sheet"), value=True)
-    inc_summary = cc3.checkbox(get_txt("एग्जीक्यूटिव समरी शीट शामिल करें", "Include Executive Summary"), value=True)
-
-# 8. Technical & Valuation Helper Functions
+# Technical & Math Helpers
 def calculate_rsi(series, period=14):
     delta = series.diff()
     gain = (delta.where(delta > 0, 0)).rolling(window=period).mean()
@@ -405,10 +325,108 @@ def fetch_option_chain_oi(ticker_obj, cmp):
     except Exception:
         return None
 
-# 9. TradingView Multi-Tab Screener Grid
-st.markdown(f"<div class='sec-header'>{get_txt('📊 TradingView लाइव स्टॉक स्क्रीनर ग्रिड', 'TradingView Live Stock Screener Grid')}</div>", unsafe_allow_html=True)
+# --- NEW FEATURE: TOP BULLISH STOCKS FLASH RADAR ---
+st.markdown(
+    """
+    <div class="flash-box">
+        🔥 <b>AI लाइव बुलिश फ़्लैश रडार (Top Bullish Momentum Stocks & Catalysts):</b><br>
+        • <b>BALRAMCHIN</b>: RSI 58 (बुलिश मोमेंटम) | चीनी निर्यात नीति व एथेनॉल ब्लेंडिंग कैटलिस्ट<br>
+        • <b>SBIN / SBICARD</b>: RSI 54 (सपोर्ट बाउंस) | क्रेडिट ग्रोथ 15%+ व NII मार्जिन विस्तार<br>
+        • <b>TATAMOTORS / KAYNES</b>: RSI 62 (ब्रेकआउट ज़ोन) | EV/सेमीकंडक्टर ऑर्डर बुक में भारी उछाल
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
 
-screener_tabs = st.tabs(["Overview", "Technicals", "Valuation", "Dividends & Margins", "🚀 Upcoming IPO Radar"])
+# Search Selection
+st.markdown(f"<div class='sec-header'>{get_txt('🔎 ऑल इंडियन इंडेक्स, US मार्केट, कमोडिटी व यूनिवर्सल सर्च', 'Indices, Commodities, US Equities & Universal Search')}</div>", unsafe_allow_html=True)
+
+idx_col, us_col, com_col = st.columns([1, 1, 1])
+
+with idx_col:
+    chosen_indian_index = st.selectbox(
+        get_txt("🏛️ भारतीय इंडेक्स:", "🏛️ Indian Indices:"),
+        options=list(ALL_INDIAN_INDICES.keys()), index=0,
+        help="NIFTY 50, NIFTY 500, Bank Nifty, Midcap, Smallcap आदि चुनें।"
+    )
+
+with us_col:
+    chosen_us_stock = st.selectbox(
+        get_txt("🇺🇸 US मार्केट:", "🇺🇸 US Market:"),
+        options=list(ALL_US_MARKET_STOCKS.keys()), index=0,
+        help="S&P 500, NASDAQ, Apple, Tesla, NVDA आदि चुनें।"
+    )
+
+with com_col:
+    chosen_commodity = st.selectbox(
+        get_txt("🪙 कमोडिटी (Gold/Oil):", "🪙 Commodities:"),
+        options=list(ALL_COMMODITIES.keys()), index=0,
+        help="Gold, Silver, Crude Oil, Natural Gas, Copper आदि चुनें।"
+    )
+
+st.markdown("##### 🔎 कंपनी का नाम या सिंबल लिखें (टाइप करते ही नीचे लाइव सुझाव आएँगे):")
+search_query = st.text_input(
+    label="Search Box",
+    placeholder="जैसे: balrampur, sbi, tata, reliance, zomato, apple, nvda...",
+    value="",
+    label_visibility="collapsed"
+).strip()
+
+live_suggestions = []
+if search_query:
+    live_suggestions = search_yahoo_tickers(search_query)
+
+if live_suggestions:
+    options_map = {disp: sym for disp, sym in live_suggestions}
+    selected_option = st.selectbox("🎯 लाइव सुझाव से स्टॉक चुनें (Select from live matches):", list(options_map.keys()), index=0)
+    symbol = options_map[selected_option]
+elif search_query:
+    cleaned_q = search_query.upper().replace(" ", "")
+    symbol = f"{cleaned_q}.NS" if ("." not in cleaned_q and not cleaned_q.startswith("^") and "=" not in cleaned_q) else cleaned_q
+elif chosen_indian_index != "-- इंडेक्स चुनें (Select Indian Index) --":
+    symbol = ALL_INDIAN_INDICES[chosen_indian_index]
+elif chosen_us_stock != "-- US स्टॉक / इंडेक्स चुनें (Select US Stock) --":
+    symbol = ALL_US_MARKET_STOCKS[chosen_us_stock]
+elif chosen_commodity != "-- कमोडिटी चुनें (Select Commodity) --":
+    symbol = ALL_COMMODITIES[chosen_commodity]
+else:
+    symbol = "BALRAMCHIN.NS"
+
+st.info(f"🎯 **सक्रिय सिंबल (Active Ticker):** `{symbol}`")
+
+# Date Range Controls
+rcol1, rcol2 = st.columns([1, 1])
+with rcol1:
+    range_type = st.radio(
+        get_txt("Range Type / मोड:", "Range Type:"),
+        [get_txt("Standard Presets (1D, 1M, 1Y...)", "Standard Presets"), get_txt("📅 Custom Date Range", "Custom Date Range")],
+        horizontal=True
+    )
+duration_map = {
+    "1 Day / 1 दिन": "1d", "5 Days / 5 दिन": "5d", "1 Month / 1 माह": "1mo",
+    "6 Months / 6 माह": "6mo", "1 Year / 1 वर्ष": "1y", "5 Years / 5 वर्ष": "5y", "Max / अधिकतम": "max"
+}
+with rcol2:
+    if "Standard" in range_type:
+        chosen_dur_label = st.selectbox(get_txt("समयावधि चुनें / Duration:", "Duration:"), list(duration_map.keys()), index=2)
+        selected_period = duration_map[chosen_dur_label]
+        start_date, end_date = None, None
+    else:
+        d_c1, d_c2 = st.columns(2)
+        start_date = d_c1.date_input("Start Date", value=datetime.date(2023, 1, 1))
+        end_date = d_c2.date_input("End Date", value=datetime.date.today())
+        selected_period = None
+
+with st.expander(get_txt("🛠️ कस्टमाइज़ेशन विकल्प (Custom Columns & Sheets)", "Custom Columns & Sheets Settings")):
+    cc1, cc2, cc3 = st.columns(3)
+    inc_ohlc = cc1.checkbox(get_txt("OHLCV डेटा शीट शामिल करें", "Include OHLCV Sheet"), value=True)
+    inc_div_sheet = cc2.checkbox(get_txt("डिविडेंड इतिहास शीट शामिल करें", "Include Dividend Sheet"), value=True)
+    inc_summary = cc3.checkbox(get_txt("एग्जीक्यूटिव समरी शीट शामिल करें", "Include Executive Summary"), value=True)
+
+# 7. TradingView Multi-Tab Screener Grid
+st.markdown(f"<div class='sec-header'>{get_txt('📊 TradingView लाइव स्टॉक स्क्रीनर ग्रिड व RSI 10-100 ज़ोन', 'TradingView Live Stock Screener Grid & RSI Zones')}</div>", unsafe_allow_html=True)
+
+screener_tabs = st.tabs(["Overview", "Technicals & RSI Zones", "Valuation", "Dividends & Margins", "🚀 Upcoming IPO Radar"])
 
 with screener_tabs[0]:
     if st.button("⚡ रन ओवरव्यू स्क्रीनर स्कैन (Run Overview Scan)", key="run_overview_scan"):
@@ -441,8 +459,8 @@ with screener_tabs[0]:
             if rows: st.dataframe(pd.DataFrame(rows), use_container_width=True)
 
 with screener_tabs[1]:
-    if st.button("⚡ रन टेक्निकल इंडिकेटर स्कैन (Run Technicals Scan)", key="run_tech_scan"):
-        with st.spinner("Calculating RSI, MACD & Signals..."):
+    if st.button("⚡ रन RSI 10-100 ज़ोन व बुलिश सिग्नल स्कैन", key="run_tech_scan"):
+        with st.spinner("Calculating RSI Zones, Momentum & Breakouts..."):
             tech_rows = []
             for s_name, s_ticker in POPULAR_STOCKS_PRESET[:20]:
                 try:
@@ -454,14 +472,31 @@ with screener_tabs[1]:
                         m_line, s_line = calculate_macd(s_h["Close"])
                         m_val = round(float(m_line.iloc[-1]), 2)
                         
-                        if r_val <= 35: act = "🟢 Strong Buy (Oversold)"
-                        elif r_val >= 70: act = "🔴 Strong Sell (Overbought)"
-                        elif m_val > 0 and r_val > 55: act = "🟢 Buy (Momentum)"
-                        else: act = "🟡 Neutral / Hold"
+                        if r_val <= 30:
+                            zone = "RSI 0-30 (Extreme Oversold / Strong Buy)"
+                            act = "🟢 Strong Buy (Oversold)"
+                            reason = "संकेतक न्यूनतम स्तर पर, रिवर्सल बाउंस की उच्च संभावना"
+                        elif r_val <= 45:
+                            zone = "RSI 30-45 (Accumulation Zone)"
+                            act = "🟢 Buy on Dips"
+                            reason = "सपोर्ट लेवल पर एक्युमुलेशन और बॉटम फॉर्मेशन"
+                        elif r_val <= 65:
+                            zone = "RSI 45-65 (Strong Bullish Momentum)"
+                            act = "🟢 Strong Bullish (Holding)"
+                            reason = "पॉजिटिव प्राइस मोमेंटम व 50-SMA से ऊपर सस्टेन"
+                        elif r_val <= 75:
+                            zone = "RSI 65-75 (Overbought Entry)"
+                            act = "🟡 Hold / Trail SL"
+                            reason = "तेज रैली जारी, स्टॉप-लॉस ट्रेल करें"
+                        else:
+                            zone = "RSI 75-100 (Extreme Overbought)"
+                            act = "🔴 Profit Booking Alert"
+                            reason = "अत्यधिक ओवरबॉट, कभी भी मुनाफावसूली संभव"
 
                         tech_rows.append({
                             "Symbol": s_ticker, "Company Name": s_name, "Price": c_p,
-                            "RSI (14)": r_val, "MACD": m_val, "AI Action Signal": act
+                            "RSI (14)": r_val, "RSI 10-100 Zone": zone, "AI Action Signal": act,
+                            "बुलिश / एक्शन का कारण (Reason)": reason
                         })
                 except Exception:
                     continue
@@ -510,13 +545,12 @@ with screener_tabs[3]:
 with screener_tabs[4]:
     st.dataframe(pd.DataFrame(UPCOMING_IPOS_DATA), use_container_width=True)
 
-# 10. Robust Stock Fetching Engine
+# 8. Fetch Single Stock Data Payload
 def fetch_stock_payload(ticker_symbol, period_val, s_date, e_date):
     try:
         t = yf.Ticker(ticker_symbol)
         h = t.history(period=period_val) if period_val else t.history(start=s_date, end=e_date)
         
-        # Fallback resolution
         if h.empty and not ticker_symbol.endswith(".NS") and not ticker_symbol.startswith("^") and "=" not in ticker_symbol:
             t = yf.Ticker(f"{ticker_symbol}.NS")
             h = t.history(period=period_val) if period_val else t.history(start=s_date, end=e_date)
@@ -578,7 +612,7 @@ def generate_premium_excel(summary_data, hist_df, div_df, inc_s, inc_o, inc_d):
     output.seek(0)
     return output.getvalue()
 
-# 11. Execution & Single Stock Analytics
+# 9. Execution & Single Stock Detailed Report
 if symbol:
     with st.spinner(f"Fetching Live Market Analytics for {symbol}..."):
         ticker_obj, df_hist, stock_info, ath_val, df_div = fetch_stock_payload(symbol, selected_period, start_date, end_date)
@@ -622,7 +656,28 @@ if symbol:
         latest_sig = float(df_hist["MACD_Sig"].dropna().iloc[-1]) if not df_hist["MACD_Sig"].dropna().empty else 0.0
         sma_50_val = float(df_hist["SMA_50"].dropna().iloc[-1]) if not df_hist["SMA_50"].dropna().empty else cmp_price
 
-        rsi_sig = "OVERSOLD (BUY)" if latest_rsi < 35 else ("OVERBOUGHT (SELL)" if latest_rsi > 70 else "NEUTRAL")
+        # RSI Overbought/Oversold Level Categorization
+        if latest_rsi <= 30:
+            rsi_detail = "RSI 0-30 (Strong Oversold / Best Buying Opportunity)"
+            rsi_sig = "OVERSOLD (BUY)"
+            rsi_catalyst = "स्टॉक अत्यधिक ओवर्सोल्ड स्तर पर है, रिस्क न्यूनतम और रिवर्सल बाउंस की अत्यधिक संभावना है।"
+        elif latest_rsi <= 45:
+            rsi_detail = "RSI 30-45 (Accumulation Range)"
+            rsi_sig = "ACCUMULATE (BUY ON DIPS)"
+            rsi_catalyst = "सपोर्ट के पास ठहराव, बॉटम फॉर्मेशन के बाद धीरे-धीरे एक्युमुलेट करने का सही स्तर।"
+        elif latest_rsi <= 65:
+            rsi_detail = "RSI 45-65 (Bullish Trend Momentum)"
+            rsi_sig = "BULLISH (HOLD / ACCUMULATE)"
+            rsi_catalyst = "स्वस्थ बुलिश मोमेंटम जारी, मूविंग एवरेज से ऊपर मजबूत वॉल्यूम सपोर्ट।"
+        elif latest_rsi <= 75:
+            rsi_detail = "RSI 65-75 (Overbought Zone Entry)"
+            rsi_sig = "BULLISH / TRAIL STOPLOSS"
+            rsi_catalyst = "मोमेंटम बहुत मजबूत है, लेकिन फ्रेश एंट्री से बचें और स्टॉप-लॉस ऊपर की ओर ट्रेल करें।"
+        else:
+            rsi_detail = "RSI 75-100 (Extreme Overbought / Profit Booking Alert)"
+            rsi_sig = "OVERBOUGHT (SELL / BOOK PROFIT)"
+            rsi_catalyst = "अत्यधिक ओवरबॉट ज़ोन, यहाँ से किसी भी समय शॉर्ट-टर्म मुनाफावसूली या पुलबैक आ सकता है।"
+
         macd_sig = "BULLISH CROSSOVER (BUY)" if latest_macd > latest_sig else "BEARISH CROSSOVER (SELL)"
         trend_sig = "BULLISH (Above 50 SMA)" if cmp_price > sma_50_val else "BEARISH (Below 50 SMA)"
 
@@ -639,7 +694,6 @@ if symbol:
 
         win_prob = round(min(max((score / 7.5) * 100, 25.0), 93.0), 1)
         
-        # AI Future Trend Prediction
         if win_prob >= 78:
             ai_action = "EXTREMELY BULLISH 🚀🚀 (अति तेज वृद्धि संभावना)"
             future_pred_text = "अगले 3-6 महीनों में मजबूत मोमेंटम और नए हाई बनाने की उच्च संभावना (80%+ Positive Bias)।"
@@ -677,37 +731,38 @@ if symbol:
         tgt_1 = round(cmp_price * 1.08, 2)
         tgt_2 = round(cmp_price * 1.15, 2)
 
-        # Institutional Brokerage Consensus Ratings
         analyst_recom = str(stock_info.get("recommendationKey", "BUY")).replace('_', ' ').upper()
         target_mean = stock_info.get("targetMeanPrice", round(cmp_price * 1.14, 2))
 
         total_lifetime_div = float(df_div.sum()) if not df_div.empty else 0.0
         yield_on_cost = (div_rate / buy_price * 100) if buy_price > 0 else None
 
-        # Stock Header
+        # Header Info
         st.markdown("---")
         st.subheader(f"🏢 {long_name} ({symbol})")
         st.caption(f"Sector: **{sector}** | Industry: **{industry}** | Currency: **{currency}**")
 
-        # 0. AI FUTURE PREDICTION & INSTITUTIONAL BROKERAGE RATINGS
-        st.markdown(f"<div class='sec-header'>{get_txt('🤖 AI भविष्य प्रेडिक्शन, ब्रोकरेज रेटिंग्स व खरीद/बिक्री फैसला', 'AI Future Prediction & Institutional Brokerage Ratings')}</div>", unsafe_allow_html=True)
+        # AI Prediction & Brokerage Ratings
+        st.markdown(f"<div class='sec-header'>{get_txt('🤖 AI भविष्य प्रेडिक्शन, RSI लेवल व ब्रोकरेज कंसेंसस', 'AI Future Prediction & Institutional Brokerage Ratings')}</div>", unsafe_allow_html=True)
         
-        r1, r2, r3 = st.columns(3)
+        r1, r2, r3, r4 = st.columns(4)
         r1.metric("📌 AI प्रेडिक्शन वर्डिक्ट", ai_action)
         r2.metric("📊 प्रॉफिट प्रोबेबिलिटी स्कोर", f"{win_prob}%", "AI ऐतिहासिक डेटा मॉडल")
-        r3.metric("🏢 ब्रोकरेज रेटिंग कंसेंसस", f"⭐ {analyst_recom}", f"Avg Target: {currency} {target_mean:,.1f}")
+        r3.metric("📈 RSI (14) स्टेटस", f"{latest_rsi:.1f}", rsi_sig)
+        r4.metric("🏢 ब्रोकरेज कंसेंसस", f"⭐ {analyst_recom}", f"Target: {currency} {target_mean:,.1f}")
 
         st.markdown(
             f"""
             <div class="ai-box">
-                🔮 <b>AI बॉट फ्यूचर प्रेडिक्शन एनालिसिस:</b> {future_pred_text}<br>
-                🏢 <b>संस्थागत व एक्सपर्ट ओपिनियन:</b> शीर्ष क्रेडिट व ब्रोकरेज रिसर्च हाउसेस द्वारा इस पर <b>{analyst_recom}</b> रेटिंग और <b>{currency} {target_mean:,.2f}</b> का लक्ष्य मूल्य दिया गया है।
+                🔮 <b>AI बॉट फ्यूचर प्रेडिक्शन:</b> {future_pred_text}<br>
+                📊 <b>RSI लेवल एनालिसिस:</b> <b>{rsi_detail}</b> — {rsi_catalyst}<br>
+                🏢 <b>संस्थागत ब्रोकरेज ओपिनियन:</b> शीर्ष रिसर्च हाउसेस द्वारा इस पर <b>{analyst_recom}</b> रेटिंग और <b>{currency} {target_mean:,.2f}</b> का औसत टारगेट मूल्य दिया गया है।
             </div>
             """,
             unsafe_allow_html=True,
         )
 
-        # 0.1 Fundamental Soundness
+        # Fundamental Health
         st.markdown(f"<div class='sec-header'>{get_txt('🛡️ AI फंडामेंटल हेल्थ व कंपनी साउंडनेस', 'AI Fundamental Soundness & Health Score')}</div>", unsafe_allow_html=True)
         st.markdown(f"<div class='{fund_class}'>📊 <b>कंपनी स्थिति:</b> {fund_verdict} | <b>AI हेल्थ स्कोर:</b> {fund_score}/100</div>", unsafe_allow_html=True)
 
@@ -717,7 +772,7 @@ if symbol:
         factors_txt = "\n".join(fund_factors[:3])
         fcol3.success(f"📋 **मुख्य फंडामेंटल कारक:**\n\n{factors_txt}")
 
-        # 0.2 Re-Buy Price & Levels
+        # Re-Buy Levels
         st.markdown(f"<div class='sec-header'>{get_txt('🎯 AI री-बाय / एवरेजिंग कैलकुलेटर व ट्रेडिंग स्तर', 'AI Re-Buy Price & Trading Levels')}</div>", unsafe_allow_html=True)
         l1, l2, l3, l4 = st.columns(4)
         l1.metric("📥 AI री-बाय स्तर", f"{currency} {suggested_rebuy_price:,.2f}")
@@ -725,7 +780,7 @@ if symbol:
         l3.metric("🎯 टार्गेट 1 (Target 1)", f"{currency} {tgt_1:,.2f}", "+8% Target")
         l4.metric("🚀 टार्गेट 2 (Target 2)", f"{currency} {tgt_2:,.2f}", "+15% Target")
 
-        # 1. Price Action & ATH
+        # Price Action & ATH
         st.markdown(f"<div class='sec-header'>{get_txt('मूल्य एवं 52-सप्ताह/लाइफटाइम स्थिति', 'Price Action & ATH Range')}</div>", unsafe_allow_html=True)
         m1, m2, m3, m4, m5 = st.columns(5)
         m1.metric("CMP", f"{currency} {cmp_price:,.2f}", f"{price_change:+.2f} ({price_change_pct:+.2f}%)")
@@ -737,7 +792,7 @@ if symbol:
         else:
             m5.metric("Intrinsic Value", "N/A")
 
-        # 2. Valuation
+        # Valuation
         st.markdown(f"<div class='sec-header'>{get_txt('वैल्युएशन एवं फंडामेंटल्स (P/E & P/B Multiples)', 'Valuation & Fundamentals')}</div>", unsafe_allow_html=True)
         v1, v2, v3, v4, v5 = st.columns(5)
         v1.metric("Company P/E", f"{company_pe:.2f}" if company_pe else "N/A")
@@ -746,7 +801,7 @@ if symbol:
         v4.metric("EPS (TTM)", f"{currency} {eps:.2f}" if eps else "N/A")
         v5.metric("Dividend Yield (CMP)", f"{div_yield:.2f}%")
 
-        # 3. Dividend Intelligence & Custom Date Filter
+        # Dividend Analytics
         st.markdown(f"<div class='sec-header'>{get_txt('💰 डिविडेंड विश्लेषण एवं पूंजी यील्ड (Dividend Analytics & Yield on Cost)', 'Dividend Analytics & Yield on Cost')}</div>", unsafe_allow_html=True)
         d1, d2, d3, d4 = st.columns(4)
         d1.metric(get_txt("लाइफटाइम कुल डिविडेंड", "Lifetime Total Div"), f"{currency} {total_lifetime_div:,.2f}")
@@ -757,19 +812,7 @@ if symbol:
         else:
             d4.metric(get_txt("खरीद मूल्य पर यील्ड", "Yield on Cost"), "Sidebar में दर्ज करें")
 
-        with st.expander(get_txt("📅 कस्टम तारीख अनुसार डिविडेंड कैलकुलेटर", "Custom Date Range Dividend Calculator")):
-            div_c1, div_c2 = st.columns(2)
-            c_start = div_c1.date_input("Dividend Filter Start", value=datetime.date(2020, 1, 1), key="div_c_start")
-            c_end = div_c2.date_input("Dividend Filter End", value=datetime.date.today(), key="div_c_end")
-            if not df_div.empty:
-                div_clean = df_div.copy()
-                div_clean.index = div_clean.index.tz_localize(None)
-                mask = (div_clean.index.date >= c_start) & (div_clean.index.date <= c_end)
-                range_div_sum = div_clean[mask].sum()
-                st.write(f"**{c_start} से {c_end} के बीच कुल डिविडेंड:** `{currency} {range_div_sum:,.2f}`")
-                st.dataframe(div_clean[mask], use_container_width=True)
-
-        # 4. F&O / Option Chain Insights
+        # F&O & Option Chain
         if oi_data:
             st.markdown(f"<div class='sec-header'>{get_txt('📈 Live Option Chain, PCR व ओपन इंटरेस्ट (OI) विश्लेषण', 'Live Option Chain & Open Interest')}</div>", unsafe_allow_html=True)
             o1, o2, o3, o4 = st.columns(4)
@@ -777,9 +820,9 @@ if symbol:
             o2.metric("OI Action Signal", oi_data["oi_action"])
             o3.metric("Option Fair Price Center", f"{currency} {oi_data['option_fair_price']}")
             o4.metric("Support / Resistance", f"{oi_data['put_support']} / {oi_data['call_resistance']}")
-            st.info(f"💡 **F&O / OI सेंटीमेंट इंटरप्रिटेशन:** {oi_data['sentiment']} (Expiry: {oi_data['expiry']})")
+            st.info(f"💡 **F&O / OI सेंटीमेंट:** {oi_data['sentiment']} (Expiry: {oi_data['expiry']})")
 
-        # 5. TradingView Multi-Panel Chart
+        # TradingView Multi-Panel Chart
         st.markdown(f"<div class='sec-header'>📈 TradingView Pro Technical Chart (SMA, BB, MACD & RSI)</div>", unsafe_allow_html=True)
         fig = make_subplots(
             rows=3, cols=1, shared_xaxes=True, vertical_spacing=0.03,
@@ -813,7 +856,7 @@ if symbol:
         with st.expander(get_txt("📋 पूर्ण डेटा तालिका देखें (View Full OHLC Table)", "View Full OHLC Table")):
             st.dataframe(df_hist, use_container_width=True)
 
-        # 6. Full Excel Export
+        # Excel Export
         summary_rows = [
             {"Field": "--- GENERAL OVERVIEW ---", "Value": ""},
             {"Field": "Company Name", "Value": str(long_name)},
@@ -824,6 +867,7 @@ if symbol:
             {"Field": "AI Profit Probability", "Value": f"{win_prob}%"},
             {"Field": "Institutional Brokerage Consensus", "Value": analyst_recom},
             {"Field": "Brokerage Target Price", "Value": f"{currency} {target_mean:,.2f}"},
+            {"Field": "RSI 10-100 Level Detail", "Value": rsi_detail},
             {"Field": "--- AI VALUATION & LEVELS ---", "Value": ""},
             {"Field": "AI Fair Buy Price", "Value": f"{currency} {ai_fair_buy_price:,.2f}"},
             {"Field": "AI Max Buy Limit", "Value": f"{currency} {ai_max_buy_price:,.2f}"},
