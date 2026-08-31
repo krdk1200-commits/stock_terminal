@@ -36,9 +36,9 @@ now_time_str = datetime.datetime.now().strftime("%d-%b-%Y | %I:%M %p")
 if "ai_score" not in st.session_state:
     st.session_state.ai_score = 100
 if "ai_wins" not in st.session_state:
-    st.session_state.ai_wins = 68
+    st.session_state.ai_wins = 64
 if "ai_losses" not in st.session_state:
-    st.session_state.ai_losses = 5
+    st.session_state.ai_losses = 6
 
 VALID_INVITE_CODES = ["DEEPAK@1200", "VIP_DEEPAK_2026", "ALPHA_TRADER_777", "SMART_MONEY_PRO"]
 
@@ -200,6 +200,7 @@ ALL_US_MARKET_STOCKS = {
     "JPMorgan Chase": "JPM",
 }
 
+# --- 🥇 LIVE INTRADAY TOP MOVERS, GAINERS & LOSERS MASTER ---
 TOP_INTRADAY_MOVERS = [
     {"Stock Name": "State Bank of India (SBIN)", "Type": "🟢 Top Gainer", "CMP": "₹820.50", "Action": "STRONG BUY", "Entry": "₹818.00", "Target": "₹842.00", "StopLoss": "₹809.00", "PCR": "1.35 (Bullish)", "RSI": "62.4", "Reason": "शॉर्ट कवरिंग और मजबूत संस्थागत वॉल्यूम बाइंग।"},
     {"Stock Name": "Tata Motors Ltd (TATAMOTORS)", "Type": "🟢 Top Gainer", "CMP": "₹992.00", "Action": "BUY", "Entry": "₹988.00", "Target": "₹1,020.00", "StopLoss": "₹976.00", "PCR": "1.22 (Bullish)", "RSI": "59.1", "Reason": "EV सेगमेंट में रिकॉर्ड डिलीवरी और ब्रेकआउट।"},
@@ -208,8 +209,9 @@ TOP_INTRADAY_MOVERS = [
     {"Stock Name": "Paytm (PAYTM)", "Type": "🔴 Top Loser", "CMP": "₹785.00", "Action": "SELL / SHORT", "Entry": "₹792.00", "Target": "₹750.00", "StopLoss": "₹812.00", "PCR": "0.68 (Bearish)", "RSI": "38.2", "Reason": "रेगुलेटरी चिंताओं के कारण ओवरहेड सप्लाई।"},
 ]
 
+# --- 🪙 COMMODITIES INTRADAY MATRIX (Gold, Silver, Crude, Natural Gas) ---
 COMMODITIES_INTRADAY_DATA = [
-    {"Commodity": "Gold (सोना)", "Signal": "🟢 BUY (Intraday)", "CMP ($/oz)": "$2,520.40", "PCR": "1.28", "RSI": "61.5", "Strategy": "सपोर्ट ₹71,500 ($2,500) पर डिप बाइंग करें।", "Reason": "वैश्विक महंगाई औरफेड रेट कट उम्मीदें।"},
+    {"Commodity": "Gold (सोना)", "Signal": "🟢 BUY (Intraday)", "CMP ($/oz)": "$2,520.40", "PCR": "1.28", "RSI": "61.5", "Strategy": "सपोर्ट ₹71,500 ($2,500) पर डिप बाइंग करें।", "Reason": "वैश्विक महंगाई और फेड रेट कट उम्मीदें।"},
     {"Commodity": "Silver (चाँदी)", "Signal": "🟢 BUY ON DIPS", "CMP ($/oz)": "$29.85", "PCR": "1.18", "RSI": "58.2", "Strategy": "औद्योगिक मांग मजबूत, लॉन्ग पोजीशन रखें।", "Reason": "सोलर और ग्रीन एनर्जी डिमांड।"},
     {"Commodity": "Crude Oil WTI (कच्चा तेल)", "Signal": "🔴 SELL ON RISE", "CMP ($/barrel)": "$75.80", "PCR": "0.74", "RSI": "42.1", "Strategy": "उछाल आने पर शॉर्ट/सेल करें।", "Reason": "ओपेक प्लस सप्लाई बढ़ोतरी और कमजोर ग्लोबल डिमांड।"},
     {"Commodity": "Natural Gas (प्राकृतिक गैस)", "Signal": "🟡 RANGEBOUND / HOLD", "CMP ($/MMBtu)": "$2.18", "PCR": "0.95", "RSI": "49.8", "Strategy": "सीमित दायरे में ट्रेड करें।", "Reason": "वेदर फोरकास्ट संतुलित।"},
@@ -680,7 +682,7 @@ with st.expander(get_txt("🛠️ कस्टमाइज़ेशन विक
     inc_div_sheet = cc2.checkbox(get_txt("डिविडेंड इतिहास शीट शामिल करें", "Include Dividend Sheet"), value=True)
     inc_summary = cc3.checkbox(get_txt("एग्जीक्यूटिव समरी शीट शामिल करें", "Include Executive Summary"), value=True)
 
-# 7. Multi-Tab Screener Grid
+# 7. Multi-Tab Screener Grid (Including Intraday Top Movers & Commodities Matrix)
 st.markdown(f"<div class='sec-header'>{get_txt('📊 TradingView लाइव स्क्रीनर, इंट्राडे टॉप मूवर्स, कमोडिटीज व संस्थागत रडार', 'Intraday Top Movers, Commodities & Screener')}</div>", unsafe_allow_html=True)
 
 screener_tabs = st.tabs([
