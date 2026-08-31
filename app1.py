@@ -329,6 +329,61 @@ CURRENT_UPCOMING_IPOS_DATA = [
     {"IPO Name": "Purple Style Labs", "Sector": "Luxury Fashion Retail", "Price Band": "₹575 - ₹605", "Estimated GMP": "+6% (₹30)", "Issue Dates": "31-Aug to 02-Sep", "Rating Review": "3.7/5 (Premium Play)", "AI Verdict": "🟡 APPLY (Selective)"},
 ]
 
+# --- 🥇 LIVE INTRADAY TOP MOVERS FETCHER (Real Gainers / Losers / Volume Shockers) ---
+# Yeh function yfinance se REAL live data fetch karta hai (jaisa Groww "Volume Shockers"
+# page pe dikhta hai). Yeh POPULAR_STOCKS_PRESET list ke stocks ko scan karke:
+#   1) Aaj ka % change (Top Gainers / Top Losers)
+#   2) Aaj ka volume vs pichle 10 din ke average volume (Volume Shockers)
+# nikaal ke sort karta hai — bilkul waisa hi jaisa Groww ke "Volume shockers today" page
+# aur real intraday top movers screener me dikhta hai.
+@st.cache_data(ttl=300, show_spinner=False)
+def fetch_live_top_movers(stock_list):
+    gainers, losers, vol_shockers = [], [], []
+    for s_name, s_ticker in stock_list:
+        try:
+            t = yf.Ticker(s_ticker)
+            h = t.history(period="1mo")
+            if h.empty or len(h) < 3:
+                continue
+            last_close = float(h["Close"].iloc[-1])
+            prev_close = float(h["Close"].iloc[-2])
+            if prev_close == 0:
+                continue
+            chg = last_close - prev_close
+            chg_pct = (chg / prev_close) * 100
+            vol_today = float(h["Volume"].iloc[-1])
+            avg_vol_hist = h["Volume"].iloc[:-1]
+            avg_vol = float(avg_vol_hist.tail(10).mean()) if len(avg_vol_hist) > 0 else 0.0
+            vol_chg_pct = ((vol_today - avg_vol) / avg_vol * 100) if avg_vol > 0 else 0.0
+
+            row = {
+                "Stock Name": s_name,
+                "Symbol": s_ticker,
+                "CMP": f"₹{last_close:,.2f}",
+                "Change": f"{chg:+.2f}",
+                "Change %": f"{chg_pct:+.2f}%",
+                "Volume": f"{vol_today:,.0f}",
+                "Vol vs 10D Avg": f"{vol_chg_pct:+.1f}%",
+            }
+            if chg_pct > 0:
+                gainers.append({**row, "_sort": chg_pct})
+            elif chg_pct < 0:
+                losers.append({**row, "_sort": chg_pct})
+            vol_shockers.append({**row, "_sort": vol_chg_pct})
+        except Exception:
+            continue
+
+    gainers = sorted(gainers, key=lambda x: x["_sort"], reverse=True)
+    losers = sorted(losers, key=lambda x: x["_sort"])
+    vol_shockers = sorted(vol_shockers, key=lambda x: x["_sort"], reverse=True)
+
+    for lst in (gainers, losers, vol_shockers):
+        for r in lst:
+            r.pop("_sort", None)
+
+    return gainers, losers, vol_shockers
+
+
 # 4. Sidebar Private Invite Code & Settings Hub
 st.sidebar.markdown("### 🔐 प्राइवेट एक्सेस व इनवाइट कोड")
 user_invite_code = st.sidebar.text_input("Enter Passcode / Invite Code:", type="password", value="DEEPAK@1200", help="मास्टर कोड: DEEPAK@1200").strip()
@@ -702,6 +757,36 @@ screener_tabs = st.tabs([
 
 with screener_tabs[0]:
     st.markdown(f"#### ⚡ इंट्राडे टॉप मूवर्स (Top Gainers & Losers) | लाइव एंट्री व टार्गेट | तारीख: `{today_date_str}`")
+
+    run_live_movers = st.button("🔄 Live Top Gainers / Losers / Volume Shockers Scan चलाएं", key="run_live_movers")
+
+    if run_live_movers:
+        with st.spinner("Yahoo Finance से लाइव डेटा फ़ेच किया जा रहा है..."):
+            live_gainers, live_losers, live_vol_shockers = fetch_live_top_movers(POPULAR_STOCKS_PRESET)
+
+        if live_gainers or live_losers:
+            gl_c1, gl_c2 = st.columns(2)
+            with gl_c1:
+                st.success("🟢 **लाइव टॉप गेनर्स (Live Top Gainers)**")
+                if live_gainers:
+                    st.dataframe(pd.DataFrame(live_gainers), use_container_width=True)
+                else:
+                    st.info("अभी कोई गेनर नहीं मिला।")
+            with gl_c2:
+                st.error("🔴 **लाइव टॉप लूजर्स (Live Top Losers)**")
+                if live_losers:
+                    st.dataframe(pd.DataFrame(live_losers), use_container_width=True)
+                else:
+                    st.info("अभी कोई लूजर नहीं मिला।")
+
+            st.markdown("##### 📊 लाइव वॉल्यूम शॉकर्स (Top Movers by Volume vs 10-Day Avg) — Groww जैसा")
+            if live_vol_shockers:
+                st.dataframe(pd.DataFrame(live_vol_shockers), use_container_width=True)
+        else:
+            st.warning("⚠️ लाइव डेटा फ़ेच नहीं हो पाया (शायद मार्केट बंद है या रेट-लिमिट लगी)। नीचे रेफरेंस डेटा देखें।")
+
+    st.markdown("---")
+    st.caption("📌 नीचे दिया गया टेबल एक रेफरेंस/सैंपल एंट्री-टारगेट सेटअप फॉर्मेट है (ऊपर '🔄 Live Scan' बटन दबाकर असली लाइव डेटा देखें):")
     df_movers = pd.DataFrame(TOP_INTRADAY_MOVERS)
     st.dataframe(df_movers, use_container_width=True)
 
