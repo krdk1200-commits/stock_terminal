@@ -36,9 +36,9 @@ now_time_str = datetime.datetime.now().strftime("%d-%b-%Y | %I:%M %p")
 if "ai_score" not in st.session_state:
     st.session_state.ai_score = 100
 if "ai_wins" not in st.session_state:
-    st.session_state.ai_wins = 54
+    st.session_state.ai_wins = 58
 if "ai_losses" not in st.session_state:
-    st.session_state.ai_losses = 9
+    st.session_state.ai_losses = 7
 
 # Valid Invite Codes Database
 VALID_INVITE_CODES = ["DEEPAK@1200", "VIP_DEEPAK_2026", "ALPHA_TRADER_777", "SMART_MONEY_PRO"]
@@ -903,11 +903,11 @@ if symbol:
         st_signal = "🟢 BULLISH (Above Supertrend)" if cmp_price >= df_hist["ST_Lower"].iloc[-1] else "🔴 BEARISH (Below Supertrend)"
 
         # RSI Detail
-        if latest_rsi <= 30: rsi_detail = "RSI 0-30 (Strong Oversold / Best Buying Opportunity)"; rsi_sig = "OVERSOLD (BUY)"; rsi_catalyst = "रिवर्सल बाउंस की अत्यधिक संभावना।"
+        if latest_rsi <= 30: rsi_detail = "RSI 0-30 (Strong Oversold / Best Buying Opportunity)"; rsi_sig = "OVERSOLD (BUY)"; rsi_catalyst = "रिवर्सल बाउंस की उच्च संभावना।"
         elif latest_rsi <= 45: rsi_detail = "RSI 30-45 (Accumulation Range)"; rsi_sig = "ACCUMULATE (BUY ON DIPS)"; rsi_catalyst = "सपोर्ट के पास बॉटम फॉर्मेशन।"
-        elif latest_rsi <= 65: rsi_detail = "RSI 45-65 (Bullish Trend Momentum)"; rsi_sig = "BULLISH (HOLD / ACCUMULATE)"; rsi_catalyst = "मजबूत वॉल्यूम सपोर्ट के साथ रैली।"
-        elif latest_rsi <= 75: rsi_detail = "RSI 65-75 (Overbought Zone Entry)"; rsi_sig = "BULLISH / TRAIL STOPLOSS"; rsi_catalyst = "स्टॉप-लॉस ऊपर की ओर ट्रेल करें।"
-        else: rsi_detail = "RSI 75-100 (Extreme Overbought / Profit Booking Alert)"; rsi_sig = "OVERBOUGHT (SELL / BOOK PROFIT)"; rsi_catalyst = "शॉर्ट-टर्म मुनाफावसूली संभव।"
+        elif latest_rsi <= 65: rsi_detail = "RSI 45-65 (Strong Bullish Momentum)"; rsi_sig = "BULLISH (HOLD / ACCUMULATE)"; rsi_catalyst = "मजबूत वॉल्यूम सपोर्ट के साथ रैली।"
+        elif latest_rsi <= 75: rsi_detail = "RSI 65-75 (Overbought Entry)"; rsi_sig = "BULLISH / TRAIL STOPLOSS"; rsi_catalyst = "स्टॉप-लॉस ऊपर की ओर ट्रेल करें।"
+        else: rsi_detail = "RSI 75-100 (Extreme Overbought / Profit Booking Alert)"; rsi_sig = "OVERBOUGHT (SELL / BOOK PROFIT)"; rsi_catalyst = "अत्यधिक ओवरबॉट, सतर्क रहें।"
 
         macd_sig = "BULLISH CROSSOVER (BUY)" if latest_macd > latest_sig else "BEARISH CROSSOVER (SELL)"
         trend_sig = "BULLISH (Above 50 SMA)" if cmp_price > sma_50_val else "BEARISH (Below 50 SMA)"
@@ -961,7 +961,7 @@ if symbol:
             ai_fair_buy_price = round(cmp_price * 0.95, 2)
             ai_max_buy_price = round(cmp_price * 0.98, 2)
 
-        # Multi-Horizon Expected Return Calculations
+        # Multi-Horizon Expected Return Calculations (1M, 2M, 3M, 4M, 6M, 1Y, 5Y, 10Y)
         base_annual_growth = 0.14 if fund_score >= 70 else (0.10 if fund_score >= 45 else 0.06)
         div_yield_val = (div_yield / 100.0) if div_yield else 0.015
         monthly_base = (base_annual_growth + div_yield_val) / 12.0
@@ -983,7 +983,7 @@ if symbol:
                 rebuy_advice = f"🟢 स्टॉक आपके खरीद भाव से {((buy_price-cmp_price)/buy_price*100):.1f}% नीचे है। `{currency} {suggested_rebuy_price}` पर एवरेज करें।"
             else:
                 suggested_rebuy_price = round(max(cmp_price * 0.96, buy_price), 2)
-                rebuy_advice = f"⚖️ स्टॉक आपके खरीद भाव से मुनाफे में है। पिरामिडिंग हेतु `{currency} {suggested_rebuy_price}` पर जोड़ें।"
+                rebuy_advice = f"⚖️ स्टॉक आपके खरीद भाव से मुनाफे में है। पिरामिडिंग हेतु डिप पर `{currency} {suggested_rebuy_price}` पर जोड़ें।"
         else:
             suggested_rebuy_price = ai_fair_buy_price
             rebuy_advice = "Sidebar में अपना पुराना खरीद भाव दर्ज करके री-बाय स्तर देखें।"
@@ -1283,9 +1283,15 @@ if symbol:
             {"Field": "PCR (Put-Call Ratio)", "Value": str(oi_data["pcr"]) if oi_data else "N/A"},
             {"Field": "OI Sentiment", "Value": str(oi_data["sentiment"]) if oi_data else "N/A"},
             {"Field": "Option Fair Price", "Value": f"{currency} {oi_data['option_fair_price']}" if oi_data else "N/A"},
-            {"Field": "--- TECHNICAL SIGNALS ---", "Value": ""},
+            {"Field": "--- TECHNICAL SIGNALS / INDICATORS ---", "Value": ""},
             {"Field": "RSI (14)", "Value": f"{latest_rsi:.1f} ({rsi_sig})"},
             {"Field": "MACD Signal", "Value": macd_sig},
+            {"Field": "Supertrend Signal", "Value": st_signal},
+            {"Field": "UT Bot Signal", "Value": ut_bot_signal},
+            {"Field": "Pivot Point (PP)", "Value": f"₹{pp:,.2f}"},
+            {"Field": "Fibonacci Golden 61.8%", "Value": f"₹{fib_levels['61.8% (Golden)']:,.2f}"},
+            {"Field": "Smart Money Order Block", "Value": smc_order_block},
+            {"Field": "Candlestick Pattern", "Value": candle_pattern},
             {"Field": "--- DIVIDEND & CAPITAL YIELD ---", "Value": ""},
             {"Field": "Dividend Yield (CMP)", "Value": f"{div_yield:.2f}%"},
             {"Field": "Lifetime Total Dividend", "Value": f"{currency} {total_lifetime_div:,.2f}"},
