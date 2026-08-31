@@ -5,3 +5,6 @@ openpyxl
 requests
 numpy
 plotly
+requests
+smartapi-python
+pyotp
